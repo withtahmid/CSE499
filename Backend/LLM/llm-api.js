@@ -41,9 +41,7 @@ async function chat(msg){
 }
 
 async function executePrompt(prompt){
-    const result = await model.generateContent(prompt);
-    const textResponse = result.response.text()
-    return textResponse;   
+    return (await model.generateContent(prompt)).text();  
 }
 
 export default {

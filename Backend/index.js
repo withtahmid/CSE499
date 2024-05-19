@@ -16,8 +16,6 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors());
 app.use(bodyParser.json());
 
-
-
 // Routes
 // using default langchain
 app.use('/chat', conversation);
