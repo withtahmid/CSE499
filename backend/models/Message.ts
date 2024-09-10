@@ -1,0 +1,25 @@
+import { Schema, model, Types } from "mongoose";
+
+export interface MessageSchema {
+    _id: Types.ObjectId;
+    sender: "Patient" | "Assistant";
+    text: string;
+    timestamp: number;
+    question?: {
+        question: string;
+        answers: string[]
+    };
+}
+
+const messageModel = new Schema<MessageSchema>({
+    sender: { type: String, required: true },
+    text: { type: String, required: true },
+    timestamp: { type: Number, required: true, default: Date.now },
+    question: { 
+        question: { type: String },
+        answers: [ { type: String } ]
+     },
+})
+
+const Message = model("Message", messageModel);
+export default Message;
