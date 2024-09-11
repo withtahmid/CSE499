@@ -16,7 +16,7 @@ const ChatContainer = () => {
 
     useEffect(() => {
         if(conversationId){
-            dispatch(fetchPreviousConversation({conversationId}))
+            dispatch(fetchPreviousConversation({conversationId}));
         }
     }, [conversationId])
 
@@ -29,7 +29,7 @@ const ChatContainer = () => {
 
     return (
         <div className="w-full h-full flex justify-center">
-            <div className="flex flex-col h-full aspect-square bg-base-300 pl-2 relative">
+            <div className="flex flex-col h-full w-full md:w-1/2 md:h-auto  bg-base-300 pl-2 relative">
                 <div className="relative h-full">
                     <div className="absolute bottom-0 right-0 left-0 max-h-full overflow-x-hidden overflow-y-auto pb-16 scrollbar-hide"  ref={conversationDivRef}>
                         {messages.map(message => (

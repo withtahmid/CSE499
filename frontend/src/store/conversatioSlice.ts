@@ -52,6 +52,7 @@ export const sendMessage =  createAsyncThunk <MessageSchema[], { conversationId:
             const response = await trpc.sendMessage.mutate(( { conversationId, text, index } ))
             return response as MessageSchema[];
         } catch (error) {
+            console.error(error);
             return rejectWithValue ("Something went wrong");
         }
     }
@@ -60,7 +61,12 @@ export const sendMessage =  createAsyncThunk <MessageSchema[], { conversationId:
 const conversationSlice = createSlice({
     name: "conversation",
     initialState,
-    reducers:{},
+    reducers:{
+        clearConversation: (state) => {
+            localStorage.removeItem("conversationId");
+            state._id = undefined;
+        }
+    },
     extraReducers: (builder) => {
         builder
         .addCase(fetchPreviousConversation.pending, (state) => {
@@ -71,10 +77,17 @@ const conversationSlice = createSlice({
             state.error = action.error.message ?? "Something went wrong";
         })
         .addCase(fetchPreviousConversation.fulfilled, (state, action) => {
-            state.status = "succeeded";
             const messages = action.payload;
-            state.messages = messages;
-            state.currentQuestion = messages[messages.length - 1].question ?? null;
+            state.messages = [];
+            messages.forEach((message) => {
+                state.messages.push(message);
+                if(message.question && message.question.answers && message.question.answers.length){
+                    state.currentQuestion = message.question;
+                }else{
+                    state.currentQuestion = null;
+                }
+            });
+            state.status = "succeeded";
         });
 
 
@@ -94,8 +107,12 @@ const conversationSlice = createSlice({
             const messages = action.payload;
             messages.forEach((message) => {
                 state.messages.push(message);
+                if(message.question && message.question.answers && message.question.answers.length){
+                    state.currentQuestion = message.question;
+                }else{
+                    state.currentQuestion = null;
+                }
             });
-            state.currentQuestion = messages[messages.length - 1].question ?? null;
             state.status = "succeeded";
         });
 
@@ -109,8 +126,8 @@ const conversationSlice = createSlice({
             state.error = action.error.message;
         })
         .addCase(startNewConversation.fulfilled, (state, action) => {
-            state._id = action.payload;
             localStorage.setItem("conversationId", action.payload);
+            state._id = action.payload;
             state.status = "succeeded";
             state.error = undefined;
         });
@@ -118,4 +135,5 @@ const conversationSlice = createSlice({
 });
 
 const conversationReducer = conversationSlice.reducer;
+export const { clearConversation } = conversationSlice.actions;
 export default conversationReducer;

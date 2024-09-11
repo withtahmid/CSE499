@@ -154,5 +154,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
+ignore.txt
 

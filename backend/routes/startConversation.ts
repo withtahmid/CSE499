@@ -11,9 +11,10 @@ const startProcedure = publicProcedure
 .mutation(async( { input, ctx } ) => {
     
     const newConversation = new Conversation({
-        currentIndex: 0,
+        currentIndex: -1,
         scores: [],
         exchanges: [],
+        contextForLLM: [],
         metadata: input.metadata,
         initiateTime: Date.now()
     });

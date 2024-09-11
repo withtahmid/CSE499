@@ -41,7 +41,7 @@ const MetadataForm = ( { closeModal } : { closeModal: (arg:any) => void } ) => {
                     <RadioSelect options={occupationSelect} setValue={setOccupation}/>
                     <RadioSelect options={socioeconomicStatusSelect} setValue={setEconomicStatus}/>
                     <div className="flex justify-center w-fullp-3">
-                        <button onClick={submitForm} className="btn btn-wide btn-primary">Wide</button>
+                        <button onClick={submitForm} className="btn btn-wide btn-primary">Start Conversation</button>
                     </div>
                 </div>
             </div>
