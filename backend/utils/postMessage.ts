@@ -27,7 +27,8 @@ export const getPostMessage = async (conversation: ConversationSchema): Promise<
         
         var response = await executePrompt(prompt);
     } catch (error) {
-        throw error;
+        console.log(error);
+        return "SERVER ERROR :("
     }
     return response;
 }

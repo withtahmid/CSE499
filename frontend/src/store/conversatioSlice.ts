@@ -116,7 +116,6 @@ const conversationSlice = createSlice({
             state.status = "succeeded";
         });
 
-
         builder
         .addCase(startNewConversation.pending, (state, _) => {
             state.status = "creating";
@@ -130,6 +129,7 @@ const conversationSlice = createSlice({
             state._id = action.payload;
             state.status = "succeeded";
             state.error = undefined;
+            state.messages = []
         });
     }
 });

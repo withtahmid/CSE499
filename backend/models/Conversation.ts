@@ -17,6 +17,12 @@ export interface ConversationSchema{
         sender: "Patient" | "Assistant";
         text: string;
     } ];
+
+    currentQuestionContext: [{
+        sender: "Patient" | "Assistant";
+        text: string;
+    }]
+
 }
 
 const conversationModel = new Schema<ConversationSchema>({
@@ -31,6 +37,12 @@ const conversationModel = new Schema<ConversationSchema>({
     ],
     contextForLLM: [{
     
+        sender: { type: String, required: true },
+        text: { type: String, required: true },
+    
+    }],
+    
+    currentQuestionContext: [{
         sender: { type: String, required: true },
         text: { type: String, required: true },
     

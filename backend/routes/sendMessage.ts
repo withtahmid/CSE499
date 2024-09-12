@@ -8,6 +8,8 @@ import { processUserResponse } from "../utils/processUserResponse";
 import { getNextQuestion } from "../utils/getNextQuestion";
 import { getReport } from "../utils/getReport";
 import { handleEdgeCase } from "../utils/handleEdgeCase"
+import { getPostMessage } from "../utils/postMessage";
+import { newQuestionContext } from "../utils/context/startQuestionContext";
 
 const Inputschema = z.object({
     text: z.string().min(1).max(200),
@@ -30,6 +32,7 @@ const sendMessageProcedure = publicProcedure
     try {
         const userResponse = new Message({ sender: "Patient", text: text, timestamp: Date.now()});
         conversation.messages.push(userResponse);
+        conversation.currentQuestionContext.push({sender: "Patient", text: text });
         await Promise.all([  userResponse.save(), conversation.save() ]);
     } catch (error) {
         console.log(error);
@@ -37,14 +40,12 @@ const sendMessageProcedure = publicProcedure
     }
     
 
-    if(conversation.currentIndex == -1 || conversation.currentIndex >= BDI_Questions.length){
-        const initial = conversation.currentIndex == -1;
-        conversation.contextForLLM.push({ sender: "Patient", text: text });
-        const botResponse = await handleEdgeCase(conversation, text);
-        conversation.currentIndex = initial ? 0 : conversation.currentIndex;
-        const botMessage = new Message({ sender: "Assistant", text: botResponse, timestamp: Date.now(), question: initial? BDI_Questions[0] : undefined });
+    if(conversation.currentIndex >= BDI_Questions.length){
+        // conversation.contextForLLM.push({ sender: "Patient", text: text });
+        const botResponse = await getPostMessage(conversation);
+        const botMessage = new Message({ sender: "Assistant", text: botResponse, timestamp: Date.now() });
         conversation.messages.push(botMessage);
-        conversation.contextForLLM.push({ sender: "Assistant", text: botResponse });
+        // conversation.contextForLLM.push({ sender: "Assistant", text: botResponse });
         await Promise.all([  botMessage.save(), conversation.save() ]);
         return [ botMessage ] as MessageSchema[];
     }
@@ -62,6 +63,7 @@ const sendMessageProcedure = publicProcedure
         console.log("\n\nAsking again");
         const followedQuestion = new Message({ sender: "Assistant", text: userresponseReport.followedQuestion, timestamp: Date.now() });
         conversation.messages.push(followedQuestion);
+        conversation.currentQuestionContext.push({sender: "Assistant", text: userresponseReport.followedQuestion });
         try {
             await Promise.all([ followedQuestion.save(), conversation.save() ]);
         } catch (error) {
@@ -72,35 +74,43 @@ const sendMessageProcedure = publicProcedure
     }
     else if(userresponseReport.score !== undefined){
         console.log(`\n\nObtained Score: ${userresponseReport.score}`);
-        conversation.contextForLLM.push({ sender: "Patient", text: BDI_Questions[conversation.currentIndex].answers[userresponseReport.score]});
-        conversation.scores.push({
-            questionIndex: conversation.currentIndex,
-            score: userresponseReport.score,
-            isConfident: userresponseReport.isConfident ?? false,
-        });
+        // conversation.contextForLLM.push({ sender: "Patient", text: BDI_Questions[conversation.currentIndex].answers[userresponseReport.score]});
+        if(!userresponseReport.isConfident){
+            const confirmationMessage = new Message({
+                sender: "Assistant",
+                timestamp : Date.now(),
+                text: BDI_Questions[conversation.currentIndex].answers[userresponseReport.score],
+                isConfirmation: true,
+            });
+            response.push(confirmationMessage)
+        }
+        conversation.scores.push({ questionIndex: conversation.currentIndex, score: userresponseReport.score, isConfident: userresponseReport.isConfident ?? false});
+        
         conversation.currentIndex = conversation.currentIndex + 1;
         
-        if(conversation.currentIndex < BDI_Questions.length){
+        if(conversation.currentIndex >= BDI_Questions.length){
             try {
-                var botResponse = await getNextQuestion(conversation);
-                conversation.contextForLLM.push({ sender: "Assistant", text: botResponse });
-            } catch (error) {
-                throw new TRPCError({ message: "Failed to generate Assistant's next question using context", code: "INTERNAL_SERVER_ERROR" });   
-            }   
-        }else if(conversation.currentIndex === BDI_Questions.length){
-            try {
-                var botResponse = await getReport(conversation);
-                conversation.contextForLLM.push({ sender: "Assistant", text: botResponse });
+                var finalReport = await getReport(conversation);
+                var  assistantReport = new Message({ sender: "Assistant", text: finalReport, timestamp: Date.now()});
+                conversation.messages.push(assistantReport);
+                await Promise.all([ assistantReport.save(), conversation.save() ])
+                return [ assistantReport ];
             } catch (error) {
                 throw new TRPCError({ message: "Failed to generate post analysis report", code: "INTERNAL_SERVER_ERROR" });   
             }   
-        }else{
-            throw new TRPCError({ message: `Reached unreachable part. "conversation.currentIndex" is greater than questions`, code: "INTERNAL_SERVER_ERROR" }); 
         }
         
+        try {
+            var botResponse = await getNextQuestion(conversation);
+            const assistantcontext = newQuestionContext(BDI_Questions[conversation.currentIndex], botResponse);
+            conversation.currentQuestionContext = [ assistantcontext ];
+
+        }catch (error) {
+            throw new TRPCError({ message: "Failed to generate Assistant's next question using context", code: "INTERNAL_SERVER_ERROR" });   
+        } 
         try{
-            var  nextQuestion = new Message({ sender: "Assistant", text: botResponse, timestamp: Date.now(), question: BDI_Questions[conversation.currentIndex] });
-            response = [ nextQuestion ];
+            var  nextQuestion = new Message({ sender: "Assistant", text: botResponse, timestamp: Date.now(), question: BDI_Questions[conversation.currentIndex] ?? undefined });
+            response.push(nextQuestion);
             conversation.messages.push(nextQuestion);
             await Promise.all([ nextQuestion.save(), conversation.save() ]);
         } catch (error) {
@@ -111,9 +121,9 @@ const sendMessageProcedure = publicProcedure
         throw new TRPCError({ message: "Both Score and followed by messege is Undefined", code: "INTERNAL_SERVER_ERROR" });   
     }
 
-    // console.log("\n-------------");
-    // console.log(`Index: ${conversation.currentIndex}, Score: ${conversation.scores.reduce((acc, current) => acc + current.score, 0)}`)
-    // console.log("-------------\n");
+    console.log("\n-------------");
+    console.log(`Index: ${conversation.currentIndex}, Score: ${conversation.scores.reduce((acc, current) => acc + current.score, 0)}`)
+    console.log("-------------\n");
 
     return response as MessageSchema[];
 

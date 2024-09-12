@@ -8,6 +8,6 @@ export const createContextForLLM = (conversation: ConversationSchema): string =>
     conversation.contextForLLM.forEach( ({ sender, text }) => {
         context += `\n'${sender}': '${text}'${sender === "Patient" ? "\n" : ""}`;
     })
-
+    console.log(context)
     return context;
 }

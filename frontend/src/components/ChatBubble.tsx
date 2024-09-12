@@ -1,5 +1,6 @@
 import MessageSchema from "../types/Message"
 const ChatBubble = ({ message } : { message: MessageSchema }) => {
+    
     if(message.sender === "Patient"){
         return (
             <div className="chat chat-end">
@@ -9,6 +10,28 @@ const ChatBubble = ({ message } : { message: MessageSchema }) => {
             </div>
         )
     }
+
+    if(message.isConfirmation){
+        return (
+            // <div className="chat chat-start">
+            //     <div className="chat-image avatar">
+            //         <div className="w-10 p-1 rounded-full bg-white bg-opacity-[0.5]">
+            //         <img
+            //             alt="Bot"
+            //             src="src/assets/images/Wall-E.png" />
+            //         </div>
+            //     </div>
+            //     <div className="chat-bubble">
+            //         For the<strong>"{message.text}"</strong>
+            //     </div>
+            // </div>
+            <div className="text-center my-5 opacity-[0.3]">
+                <p><strong>"{message.text}"</strong>  is considered as your answer.</p>
+                {/* <p>If you think that is a mistake</p> */}
+            </div>
+        )
+    }
+
     // const questioning
     return (
         <div className="chat chat-start">

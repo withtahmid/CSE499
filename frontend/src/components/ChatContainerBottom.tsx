@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RiSendPlane2Fill } from "react-icons/ri";
 import { useAppDispatch, useAppSelector } from "../store";
 import { sendMessage } from "../store/conversatioSlice";
@@ -9,6 +9,7 @@ const ChatContainerBottom = () => {
     const [ text, setText ] = useState("");
     const curreentQuestion = useAppSelector(state => state.conversation.currentQuestion)
     const conversationId = useAppSelector(state  => state.conversation._id);
+    const isConfirmation = useAppSelector(state => state.conversation.isConfirmation)
     const dispatch = useAppDispatch();
 
     const onTextChange = (event: { target : { value : string} }) => {
@@ -34,6 +35,10 @@ const ChatContainerBottom = () => {
         }
     }
 
+    useEffect(() => {
+        console.log(curreentQuestion);
+    }, [ curreentQuestion ])
+
     const HandleSendMessage = () => {
         if(text.length > 0){
             if(conversationId && text.length > 0){
@@ -54,8 +59,8 @@ const ChatContainerBottom = () => {
         <div className="h-auto items-center absolute bottom-0 left-0 right-0">
         <div className="px-2 py-2 flex gap-3 bg-inherit/[0.4] backdrop-blur-sm">
             <label className="bg-base-100 input input-bordered flex items-center gap-5 grow bg-base" >
-                <input type="text" className="grow flex-1" value={text} onChange={onTextChange} onKeyDown={handleEnterPress} placeholder="Send text message"/>
-                {curreentQuestion&&(answerOptions.map((c, i) => (<kbd key={i} onClick={() => submicAnswerByOption(i)}  className="kbd kbd-md cursor-pointer">{c}</kbd>)))}
+                <input disabled={false} type="text" className="grow flex-1" value={text} onChange={onTextChange} onKeyDown={handleEnterPress} placeholder="Send text message"/>
+                {(isConfirmation || curreentQuestion)&&(answerOptions.map((c, i) => (<kbd key={i} onClick={() => submicAnswerByOption(i)}  className="kbd kbd-md cursor-pointer">{c}</kbd>)))}
                 {text.length > 0 &&(
                     <button className="text-2xl" onClick={HandleSendMessage}>
                     <RiSendPlane2Fill />

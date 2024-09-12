@@ -4,5 +4,6 @@ export default interface MessageSchema {
     sender: "Patient" | "Assistant";
     text: string;
     timestamp: number;
-    question?: QuestionSchema
+    question?: QuestionSchema,
+    isConfirmation?:boolean; 
 }
