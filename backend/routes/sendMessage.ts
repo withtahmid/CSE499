@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import Conversation from "../models/Conversation";
-import Message, { MessageSchema } from "../models/Message";
-import { publicProcedure } from "../trpc";
+import Message, { ConfirmationDetailsSchema, MessageSchema } from "../models/Message";
+import { protectedProcedure, publicProcedure } from "../trpc";
 import { z } from "zod"
 import { BDI_Questions } from "../data/bdi";
 import { processUserResponse } from "../utils/processUserResponse";
@@ -10,45 +10,43 @@ import { getReport } from "../utils/getReport";
 import { handleEdgeCase } from "../utils/handleEdgeCase"
 import { getPostMessage } from "../utils/postMessage";
 import { newQuestionContext } from "../utils/context/startQuestionContext";
-
+import { setScore } from "../utils/setScore";
+import  ConfirmationDetails from "../models/ConfirmationDetails"
 const Inputschema = z.object({
     text: z.string().min(1).max(200),
-    conversationId: z.string().length(24),
     index: z.number().or(z.undefined()),
-
 })
 
-const sendMessageProcedure = publicProcedure
+const sendMessageProcedure = protectedProcedure
 .input(Inputschema)
-.mutation(async( { input } ) => {
-    
-    const { conversationId, text , index} = input;
-    const conversation = await Conversation.findById(conversationId).populate("messages").exec();
-    
-    if(!conversation){
-        throw new TRPCError({ message: "Incorrect Conversation Id", code:"NOT_FOUND" });
+.mutation(async( { input , ctx} ) => {
+    const { text , index} = input;
+    const { conversation } = ctx; 
+
+    if(conversation.currentIndex >= BDI_Questions.length){
+        // // conversation.contextForLLM.push({ sender: "Patient", text: text });
+        // const botResponse = await getPostMessage(conversation);
+        // const botMessage = new Message({ sender: "Assistant", text: botResponse, timestamp: Date.now() });
+        // conversation.messages.push(botMessage);
+        // // conversation.contextForLLM.push({ sender: "Assistant", text: botResponse });
+        // botMessage.save();
+        var finalReport = await getReport(conversation);
+        const botMessage = new Message({ sender: "Assistant", text: finalReport, timestamp: Date.now() });
+        return [ botMessage ] as MessageSchema[];
     }
 
     try {
         const userResponse = new Message({ sender: "Patient", text: text, timestamp: Date.now()});
         conversation.messages.push(userResponse);
         conversation.currentQuestionContext.push({sender: "Patient", text: text });
-        await Promise.all([  userResponse.save(), conversation.save() ]);
+        await userResponse.save();
     } catch (error) {
         console.log(error);
         throw new TRPCError({ message: "Failed to write Patient's mrssage into database", code: "INTERNAL_SERVER_ERROR" });   
     }
     
-
-    if(conversation.currentIndex >= BDI_Questions.length){
-        // conversation.contextForLLM.push({ sender: "Patient", text: text });
-        const botResponse = await getPostMessage(conversation);
-        const botMessage = new Message({ sender: "Assistant", text: botResponse, timestamp: Date.now() });
-        conversation.messages.push(botMessage);
-        // conversation.contextForLLM.push({ sender: "Assistant", text: botResponse });
-        await Promise.all([  botMessage.save(), conversation.save() ]);
-        return [ botMessage ] as MessageSchema[];
-    }
+    
+    console.log("\n\n--------------------- [ START ] ----------------------------\n");
 
     try {
         var userresponseReport  = await processUserResponse(conversation, text, index);
@@ -56,36 +54,61 @@ const sendMessageProcedure = publicProcedure
         console.log(error);
         throw new TRPCError({ message: "Failed to generate 'userResponseReport'", code: "INTERNAL_SERVER_ERROR" });   
     }
-    
+
+
     let response: MessageSchema[] = [];
 
+
     if(userresponseReport.followedQuestion !== undefined){
-        console.log("\n\nAsking again");
+        console.log("Asking again");
         const followedQuestion = new Message({ sender: "Assistant", text: userresponseReport.followedQuestion, timestamp: Date.now() });
         conversation.messages.push(followedQuestion);
         conversation.currentQuestionContext.push({sender: "Assistant", text: userresponseReport.followedQuestion });
         try {
-            await Promise.all([ followedQuestion.save(), conversation.save() ]);
+            followedQuestion.save();
         } catch (error) {
             console.log(error);
-            throw new TRPCError({ message: "Failed to write Assistant's reply into  database", code: "INTERNAL_SERVER_ERROR" });   
         }
-        response = [ followedQuestion ];
+        response.push(followedQuestion);
     }
     else if(userresponseReport.score !== undefined){
-        console.log(`\n\nObtained Score: ${userresponseReport.score}`);
+        console.log(`Obtained Score: ${userresponseReport.score}`);
         // conversation.contextForLLM.push({ sender: "Patient", text: BDI_Questions[conversation.currentIndex].answers[userresponseReport.score]});
         if(!userresponseReport.isConfident){
+
+            const confirmationDetails: ConfirmationDetailsSchema = {
+                index: conversation.currentIndex,
+                question: BDI_Questions[conversation.currentIndex].question,
+                answer: BDI_Questions[conversation.currentIndex].answers[userresponseReport.score],
+                score: userresponseReport.score,
+                confirmed: false,
+            };
+
             const confirmationMessage = new Message({
                 sender: "Assistant",
                 timestamp : Date.now(),
                 text: BDI_Questions[conversation.currentIndex].answers[userresponseReport.score],
                 isConfirmation: true,
+                confirmationDetails: confirmationDetails
             });
-            response.push(confirmationMessage)
+
+            
+            response.push(confirmationMessage);
+            conversation.messages.push(confirmationMessage);
+
+            try {
+                confirmationMessage.save();
+            } catch (error) {
+                console.log(error);
+            }
+
         }
-        conversation.scores.push({ questionIndex: conversation.currentIndex, score: userresponseReport.score, isConfident: userresponseReport.isConfident ?? false});
-        
+        try {
+            setScore(conversation, conversation.currentIndex, userresponseReport.score);
+        } catch (error) {
+            throw new TRPCError({ message: "Failed to write score into database", code: "INTERNAL_SERVER_ERROR" });  
+
+        }
         conversation.currentIndex = conversation.currentIndex + 1;
         
         if(conversation.currentIndex >= BDI_Questions.length){
@@ -93,13 +116,15 @@ const sendMessageProcedure = publicProcedure
                 var finalReport = await getReport(conversation);
                 var  assistantReport = new Message({ sender: "Assistant", text: finalReport, timestamp: Date.now()});
                 conversation.messages.push(assistantReport);
-                await Promise.all([ assistantReport.save(), conversation.save() ])
+                assistantReport.save();
                 return [ assistantReport ];
             } catch (error) {
                 throw new TRPCError({ message: "Failed to generate post analysis report", code: "INTERNAL_SERVER_ERROR" });   
             }   
         }
         
+       
+
         try {
             var botResponse = await getNextQuestion(conversation);
             const assistantcontext = newQuestionContext(BDI_Questions[conversation.currentIndex], botResponse);
@@ -112,7 +137,7 @@ const sendMessageProcedure = publicProcedure
             var  nextQuestion = new Message({ sender: "Assistant", text: botResponse, timestamp: Date.now(), question: BDI_Questions[conversation.currentIndex] ?? undefined });
             response.push(nextQuestion);
             conversation.messages.push(nextQuestion);
-            await Promise.all([ nextQuestion.save(), conversation.save() ]);
+            nextQuestion.save();
         } catch (error) {
             throw new TRPCError({ message: "Failed to write Assistant's reply into  database", code: "INTERNAL_SERVER_ERROR" });
         }
@@ -121,9 +146,8 @@ const sendMessageProcedure = publicProcedure
         throw new TRPCError({ message: "Both Score and followed by messege is Undefined", code: "INTERNAL_SERVER_ERROR" });   
     }
 
-    console.log("\n-------------");
-    console.log(`Index: ${conversation.currentIndex}, Score: ${conversation.scores.reduce((acc, current) => acc + current.score, 0)}`)
-    console.log("-------------\n");
+    console.log(`Current Question: ${conversation.currentIndex}, Total Score: ${conversation.scores.reduce((acc, current) => acc + current.score, 0)}`)
+    console.log("\n---------------------- [ END ] -----------------------------\n");
 
     return response as MessageSchema[];
 

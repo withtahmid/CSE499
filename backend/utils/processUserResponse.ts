@@ -76,10 +76,17 @@ export const processUserResponse = async (conversation: ConversationSchema, text
         return { score: index, isConfident: true };
     }
 
+    // Checking if text matches exactly with any of the possible answers
     const possibleIndex = question.answers.findIndex((answer) => answer === text);
-    
     if(possibleIndex != -1){
         return { score: possibleIndex, isConfident: true };
+    }
+
+     // Checking if text contains direct the options
+    const textLower = text.toLocaleLowerCase().trim();
+    const directOption = textLower === "a" ? 0 : textLower === "b" ? 1 : textLower === "c" ? 2 : textLower === "d" ? 3 : null;
+    if(directOption != null){
+        return { score: directOption, isConfident: true };
     }
 
     const currentQuestionContext = generateCurrentQuestionContext(conversation);
@@ -88,12 +95,11 @@ export const processUserResponse = async (conversation: ConversationSchema, text
     // const prompt = getPrompt(conversation.currentIndex, text);
 
     try {
-        
         var [ response , confidence ] = await Promise.all([executePrompt(prompt), checkConfidence(question, text, currentQuestionContext)]);
-        console.log(`Response: ${response}`)
+        // console.log(response)
     } catch (error) {
         console.log(error);
-        return  { followedQuestion: "I think I am not sure if I have understood your answer. Can you please clarify again?" };
+        return  { followedQuestion: "I think I am not sure if I have understood your answer. Can you please clarify answer with respect to the question?" };
     }
 
     
@@ -102,15 +108,13 @@ export const processUserResponse = async (conversation: ConversationSchema, text
     const max_indexes = confidence.map((value: number, index: number) => value === Math.max(...confidence) ? index : -1).filter(index => index !== -1);
     const isFoggy = max_indexes.length != 1 || max_indexes[0] != prediction;
     const isIrrelavent = prediction === -1 || !response;
-    console.log(confidence, prediction)
+    console.log(confidence, prediction, ` | Irrelevant:`,isIrrelavent, `Confusing:`, isFoggy)
     if(isIrrelavent){
-        console.log("Answer is irrelavent");
         const followedQuestion = await generateResponseForIrrelaventResponse(question, currentQuestionContext);
         return  { followedQuestion};
     }
     else if(isFoggy){
         const followedQuestion = await generateResponseForFoggyResponse(question, currentQuestionContext);
-        console.log("Answer is foggy");
         return  { followedQuestion };
     }else{
         return { score: prediction, isConfident: false };

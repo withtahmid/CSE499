@@ -37,11 +37,10 @@ return prompt;
 
 
 export const checkConfidence = async (question:QuestionSchema, text: string, history: string) => {    
-    // const prompt = getPromptToFindConfidence(history);
-    const prompt = getPrompt(question, text);
+    const prompt = getPromptToFindConfidence(history);
+    // const prompt = getPrompt(question, text);
     try {
         var response = await executePrompt(prompt);
-        console.log(response)
         const json = JSON.parse(response);
         var scores: number[] = json["scores"];
     } catch (error) {

@@ -28,7 +28,7 @@ const Navbar = () => {
                 <a className="btn btn-ghost text-xl">Chat bot</a>
             </div>
             <div className="navbar-end">
-                <button className="btn btn-ghost btn-circle"
+                <button className="btn btn-ghost btn-circle text-xl bg-primary text-black"
                     onClick={() => dispatch(clearConversation())}
                 >
                     <MdAutorenew/>

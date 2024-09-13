@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux'
 import Container from './components/Container'
 import Drawer from './components/Drawer'
 import Footer from './components/Footer'
+import { ToastProvider } from './components/ToastProvider'
 
 function App() {
 
@@ -14,7 +15,9 @@ function App() {
   return (
     <div className='h-screen w-full bg-base-300 flex flex-col'>
         <Navbar />
-        <Container />
+        <ToastProvider>
+          <Container />
+        </ToastProvider>
         <Footer />
     </div>
   )

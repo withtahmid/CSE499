@@ -35,11 +35,11 @@ const MetadataForm = ( { closeModal } : { closeModal: (arg:any) => void } ) => {
             <div className="bg-base-200 flex justify-center">
                 <div className="h-full w-full overflow-y-scroll flex flex-col gap-3 py-10">
                     <RadioSelect options={educationLevelSelect} setValue={setEducation}/>
-                    <RadioSelect options={genderSelect} setValue={setGender}/>
+                    {/* <RadioSelect options={genderSelect} setValue={setGender}/>
                     <RadioSelect options={locationSelect} setValue={setLocation}/>
                     <RadioSelect options={maritalStatusSelect} setValue={setMaritialStatus}/>
                     <RadioSelect options={occupationSelect} setValue={setOccupation}/>
-                    <RadioSelect options={socioeconomicStatusSelect} setValue={setEconomicStatus}/>
+                    <RadioSelect options={socioeconomicStatusSelect} setValue={setEconomicStatus}/> */}
                     <div className="flex justify-center w-fullp-3">
                         <button onClick={submitForm} className="btn btn-wide btn-primary">Start Conversation</button>
                     </div>

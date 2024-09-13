@@ -29,6 +29,15 @@ const prompt =`
                 throw new Error();
             }
         "
+        The match does not have to be word-for-word. but patient's responses meaning should be closer to the provided answers 'A', 'B', 'C', 'D'.
+        
+        examples_1 : A // confident about option 'A'
+        examples_2 : B // confident about option 'B'
+        examples_3 : C // confident about option 'C'
+        examples_4 : D // confident about option 'D'
+        examples_5 : X // confused between option 'A' and 'B'
+        examples_6 : X // confused between option 'B' and 'D'
+        examples_7 : X // not relevent with any of the options
 
         Output:
         Response must be just one character 'A', 'B', 'C', or 'D', or 'X' without any special character or quotation.

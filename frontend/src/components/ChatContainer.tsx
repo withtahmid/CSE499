@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { fetchPreviousConversation, } from "../store/conversatioSlice";
 import TypingBubble from "./TypingBubble";
 import ChatContainerBottom from "./ChatContainerBottom";
+import ChatLoadingSkeleton from "./ChatLoadingSkeleton";
 const ChatContainer = () => {
     
     const messages = useAppSelector(state  => state.conversation.messages);
@@ -16,9 +17,9 @@ const ChatContainer = () => {
 
     useEffect(() => {
         if(conversationId){
-            dispatch(fetchPreviousConversation({conversationId}));
+            dispatch(fetchPreviousConversation());
         }
-    }, [conversationId])
+    }, [conversationId]);
 
     useEffect(() => {
         if(conversationDivRef.current){
@@ -35,6 +36,7 @@ const ChatContainer = () => {
                         {messages.map(message => (
                             <ChatBubble message={message} key={message._id}/>
                         ))}
+                        {(status==="loading") &&  (<ChatLoadingSkeleton />)}
                         {status==="waiting" && ( <TypingBubble />)}
                     </div>
                 </div>

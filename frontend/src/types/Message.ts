@@ -1,3 +1,4 @@
+import { ConfirmationDetailsSchema } from "./ConfirmationDetails";
 import QuestionSchema from "./Question";
 export default interface MessageSchema {
     _id: string;
@@ -6,4 +7,5 @@ export default interface MessageSchema {
     timestamp: number;
     question?: QuestionSchema,
     isConfirmation?:boolean; 
+    confirmationDetails?: ConfirmationDetailsSchema;
 }

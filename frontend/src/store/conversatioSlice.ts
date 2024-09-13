@@ -3,14 +3,19 @@ import MessageSchema from "../types/Message";
 import { trpc } from "../trpc";
 import QuestionSchema from "../types/Question";
 
-import { v4 as uuidV4} from "uuid"
+import { v4 as uuidV4 } from "uuid"
+import { TRPCClientError } from "@trpc/client";
 
 export interface ConversationState{
     _id: string | undefined;
     messages: MessageSchema[];
-    status: "idle" | "loading" | "waiting" | "creating" |  "succeeded" | "failed";
-    error: string | undefined;
+    status: "idle" | "loading" | "waiting" | "creating" |  "succeeded" | "failed" | "adjusting";
+    error: { id: string; message: string; } | undefined;
     currentQuestion: QuestionSchema | null;
+}
+
+const createError = (message: string) => {
+    return { id: uuidV4(), message: message };
 }
 
 const initialState: ConversationState = {
@@ -21,15 +26,18 @@ const initialState: ConversationState = {
     currentQuestion: null,
 }
 
-export const fetchPreviousConversation = createAsyncThunk <MessageSchema[], { conversationId: string }, { rejectValue: string}>(
+export const fetchPreviousConversation = createAsyncThunk <MessageSchema[], undefined, { rejectValue: string}>(
     "conversation/fetchPrevious",
-    async({ conversationId }, { rejectWithValue } ) =>{
+    async(_, { rejectWithValue } ) =>{
         try {
-            const response = await trpc.fetchPrevious.query({ conversationId });
+            const response = await trpc.fetchPrevious.query();
             return response as MessageSchema[];
         } catch (error) {
-            return rejectWithValue ("Something went wrong");
+            if(error instanceof TRPCClientError){
+                return rejectWithValue (error.message);
+            }
         }
+        return rejectWithValue ("Failed to fetch previous messagess");
     }
 )
 
@@ -40,21 +48,41 @@ export const startNewConversation = createAsyncThunk <string, { metadata: string
             const conversationId = await trpc.start.mutate({ metadata });
             return conversationId;
         } catch (error) {
-            return rejectWithValue ("Something went wrong");
+            if(error instanceof TRPCClientError){
+                return rejectWithValue (error.message);
+            }
         }
+        return rejectWithValue ("Failed to start new conversation");
     }
 )
 
-export const sendMessage =  createAsyncThunk <MessageSchema[], { conversationId:string, text: string, index?:number }, { rejectValue: string}>(
+export const sendMessage =  createAsyncThunk <MessageSchema[], { text: string, index?:number }, { rejectValue: string}>(
     "conversation/sendMessage",
-    async( { conversationId, text, index }, { rejectWithValue } ) =>{
+    async( {  text, index }, { rejectWithValue } ) =>{
         try {
-            const response = await trpc.sendMessage.mutate(( { conversationId, text, index } ))
+            const response = await trpc.sendMessage.mutate(( { text, index } ))
             return response as MessageSchema[];
         } catch (error) {
-            console.error(error);
-            return rejectWithValue ("Something went wrong");
+            if(error instanceof TRPCClientError){
+                return rejectWithValue (error.message);
+            }
         }
+        return rejectWithValue ("Failed to send message");
+    }
+)
+
+export const adjustScore = createAsyncThunk<MessageSchema, {_id:string, score: number}, { rejectValue: string} >(
+    "conversation/adjustScore",
+    async( {  _id, score }, { rejectWithValue } ) =>{
+        try {
+            const response = await trpc.adjustScore.mutate({_id, score});
+            return response as MessageSchema;
+        } catch (error) {
+            if(error instanceof TRPCClientError){
+                return rejectWithValue (error.message);
+            }
+        }
+        return rejectWithValue ("Failed to adjust score");
     }
 )
 
@@ -74,7 +102,7 @@ const conversationSlice = createSlice({
         })
         .addCase(fetchPreviousConversation.rejected, (state, action) => {
             state.status = "failed";
-            state.error = action.error.message ?? "Something went wrong";
+            state.error = createError(action.payload as string);
         })
         .addCase(fetchPreviousConversation.fulfilled, (state, action) => {
             const messages = action.payload;
@@ -101,7 +129,7 @@ const conversationSlice = createSlice({
         })
         .addCase(sendMessage.rejected, (state, action) => {
             state.status = "failed";
-            state.error = action.error.message ?? "Something went wrong";
+            state.error = createError(action.payload as string);
         })
         .addCase(sendMessage.fulfilled, (state, action) => {
             const messages = action.payload;
@@ -122,7 +150,7 @@ const conversationSlice = createSlice({
         })
         .addCase(startNewConversation.rejected, (state, action) => {
             state.status = "failed";
-            state.error = action.error.message;
+            state.error = createError(action.payload as string);
         })
         .addCase(startNewConversation.fulfilled, (state, action) => {
             localStorage.setItem("conversationId", action.payload);
@@ -131,6 +159,22 @@ const conversationSlice = createSlice({
             state.error = undefined;
             state.messages = []
         });
+
+        builder
+        .addCase(adjustScore.pending, (state, action) => {
+            state.status = "adjusting";
+        })
+        .addCase(adjustScore.rejected, (state, action) => {
+            state.status = "failed";
+            state.error = createError(action.payload as string);
+        })
+        .addCase(adjustScore.fulfilled, (state, action) => {
+            const message = action.payload;
+            const index = state.messages.findIndex(m => m._id === message._id);
+            if(index != -1){
+                state.messages[index] = message;
+            }
+        })
     }
 });
 

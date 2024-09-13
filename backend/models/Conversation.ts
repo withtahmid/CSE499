@@ -1,13 +1,12 @@
-import { Schema, model,Types } from "mongoose";
+import { Schema, model,Types, Document } from "mongoose";
 import { MessageSchema } from "./Message"
 
 export interface ScoreSchema {
     questionIndex: number;
     score: number;
-    isConfident: boolean;
 }
 
-export interface ConversationSchema{
+export interface ConversationSchema extends Document{
     _id: Types.ObjectId;
     currentIndex: number;
     messages: MessageSchema[];
@@ -32,7 +31,6 @@ const conversationModel = new Schema<ConversationSchema>({
         { 
             questionIndex: { type: Number, required: true },
             score: { type: Number, required: true },
-            isConfident: { type: Boolean, required: true },
         } 
     ],
     contextForLLM: [{

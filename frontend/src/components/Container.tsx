@@ -1,7 +1,13 @@
+import { useEffect } from "react";
 import { useAppSelector } from "../store";
 import ChatContainer from "./ChatContainer";
 import MetadataForm from "./MetadataForm";
+import { useToast } from "./ToastProvider";
 const Container = () => {
+
+    const { addToast } = useToast();
+
+    const error = useAppSelector(state => state.conversation.error);
 
     const openForm = (event: React.MouseEvent<HTMLButtonElement, MouseEvent> | undefined) => {
         if(event){
@@ -22,6 +28,12 @@ const Container = () => {
             modal.close();
         }
     };
+
+    useEffect(() => {
+        if(error){
+            addToast(error.message, "error");
+        }
+    }, [error])
 
     const conversationId = useAppSelector(state => state.conversation._id);
     return (
