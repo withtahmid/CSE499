@@ -12,7 +12,10 @@ const ChatContainer = () => {
     const conversationId = useAppSelector(state  => state.conversation._id);
     const status = useAppSelector(state  => state.conversation.status);
     const conversationDivRef = useRef<HTMLDivElement>(null);
-    
+
+    const [ firstLand,  setFirstLand]  = useState(true);
+
+
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -22,8 +25,10 @@ const ChatContainer = () => {
     }, [conversationId]);
 
     useEffect(() => {
-        if(conversationDivRef.current){
+        if(conversationDivRef.current && !firstLand){
             conversationDivRef.current.scrollTo({ top: conversationDivRef.current.scrollHeight, behavior: "smooth" });
+        }else if(conversationDivRef.current && firstLand){
+            conversationDivRef.current.scrollTo({ top: conversationDivRef.current.scrollHeight, behavior: "instant" });
         }
     },[messages])
 

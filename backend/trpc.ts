@@ -29,7 +29,7 @@ export const router = t.router;
 export const publicProcedure = t.procedure;
 export const protectedProcedure = t.procedure.use( async( { ctx, next }) => {
     if(ctx.conversation === null){
-        throw new TRPCError({code: "UNAUTHORIZED"});
+        throw new TRPCError({code: "UNAUTHORIZED", message: "Conversation is not found to proceed"});
     }
     const result = await  next({ ctx: { ...ctx, conversation: ctx.conversation as ConversationSchema } });
     try {

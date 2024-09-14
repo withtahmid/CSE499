@@ -2,12 +2,12 @@ import { useEffect } from 'react'
 import './App.css'
 import ChatContainer from './components/ChatContainer'
 import Navbar from './components/Navbar'
-import MetadataForm from './components/MetadataForm'
+import MetadataForm from './components/metadata/MetadataForm'
 import { useSelector } from 'react-redux'
 import Container from './components/Container'
 import Drawer from './components/Drawer'
 import Footer from './components/Footer'
-import { ToastProvider } from './components/ToastProvider'
+import { ToastProvider } from './components/toast/ToastProvider'
 
 function App() {
 

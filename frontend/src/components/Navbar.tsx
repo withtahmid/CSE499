@@ -2,8 +2,15 @@ import { MdAutorenew } from "react-icons/md";
 
 import { clearConversation } from "../store/conversatioSlice";
 import { useAppDispatch } from "../store";
+import { reset } from "../store/metadataSlice";
 const Navbar = () => {
     const dispatch = useAppDispatch();
+
+    const resetConversation = () => {
+        dispatch(clearConversation());
+        dispatch(reset());
+    }
+
     return (
         <div className="navbar bg-base-100 z-10">
             <div className="navbar-start">
@@ -28,8 +35,8 @@ const Navbar = () => {
                 <a className="btn btn-ghost text-xl">Chat bot</a>
             </div>
             <div className="navbar-end">
-                <button className="btn btn-ghost btn-circle text-xl bg-primary text-black"
-                    onClick={() => dispatch(clearConversation())}
+                <button className="btn btn-primary btn-circle text-2xl"
+                    onClick={resetConversation}
                 >
                     <MdAutorenew/>
                 </button>

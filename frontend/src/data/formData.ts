@@ -1,5 +1,5 @@
 export const OTHER = "Other";
-
+export const DONT_SAY = "Prefer not to say";
 export const educationLevelSelect = [
     "Education Level",
     "No formal education",
@@ -9,6 +9,7 @@ export const educationLevelSelect = [
     "Bachelor’s degree",
     "Master’s degree",
     "Doctorate or higher",
+    DONT_SAY,
     "Other"
 ];
 
@@ -17,7 +18,7 @@ export const genderSelect = [
     "Male",
     "Female",
     "Non-binary",
-    "Prefer not to say",
+    DONT_SAY,
 ];
 
 export const occupationSelect = [
@@ -48,12 +49,13 @@ export const socioeconomicStatusSelect = [
     "$40,001 - $60,000",
     "$60,001 - $80,000",
     "More than $80,000",
-    "Prefer not to say"
+    DONT_SAY,
 ];
 
 export const locationSelect = [
     "Geographical Location",
     "Urban",
     "Suburban",
-    "Rural"
+    "Rural",
+    DONT_SAY,
 ];
