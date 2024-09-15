@@ -4,7 +4,11 @@ import { MessageSchema } from "./Message"
 export interface ScoreSchema {
     questionIndex: number;
     score: number;
+    startTime: number;
+    endTime: number;
 }
+
+// export type metadataSchema = {}
 
 export interface ConversationSchema extends Document{
     _id: Types.ObjectId;
@@ -20,8 +24,7 @@ export interface ConversationSchema extends Document{
     currentQuestionContext: [{
         sender: "Patient" | "Assistant";
         text: string;
-    }]
-
+    }];
 }
 
 const conversationModel = new Schema<ConversationSchema>({
@@ -31,6 +34,8 @@ const conversationModel = new Schema<ConversationSchema>({
         { 
             questionIndex: { type: Number, required: true },
             score: { type: Number, required: true },
+            startTime: { type: Number, required: true },
+            endTime: { type: Number },
         } 
     ],
     contextForLLM: [{
@@ -46,7 +51,7 @@ const conversationModel = new Schema<ConversationSchema>({
     
     }],
 
-    metadata: [ { type:String }]
+    metadata: [ { type:String }],
 });
 
 const Conversation = model("Conversation", conversationModel);

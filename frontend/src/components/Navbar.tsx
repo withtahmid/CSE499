@@ -1,21 +1,22 @@
 import { MdAutorenew } from "react-icons/md";
 
 import { clearConversation } from "../store/conversatioSlice";
-import { useAppDispatch } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import { reset } from "../store/metadataSlice";
 const Navbar = () => {
-    const dispatch = useAppDispatch();
-
+    const _id = useAppSelector(state => state.conversation._id)
     const resetConversation = () => {
-        dispatch(clearConversation());
-        dispatch(reset());
+        const modal = document.getElementById('new-conversation-modal') as HTMLDialogElement
+        if(modal && _id){
+            modal.showModal()
+        }
     }
 
     return (
         <div className="navbar bg-base-100 z-10">
             <div className="navbar-start">
                 <div className="dropdown">
-                <label htmlFor="my-drawer" tabIndex={0} role="button" className="btn btn-ghost btn-circle">
+                {/* <label htmlFor="my-drawer" tabIndex={0} role="button" className="btn btn-ghost btn-circle">
                     <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-5"
@@ -28,19 +29,19 @@ const Navbar = () => {
                         strokeWidth="2"
                         d="M4 6h16M4 12h16M4 18h7" />
                     </svg>
-                </label>
+                </label> */}
                 </div>
             </div>
             <div className="navbar-center">
-                <a className="btn btn-ghost text-xl">Chat bot</a>
+                {/* <a className="btn btn-ghost text-xl">Chat bot</a> */}
             </div>
             <div className="navbar-end">
-                <button className="btn btn-primary btn-circle text-2xl"
+                <button disabled={!_id} className="btn btn-primary btn-circle text-2xl"
                     onClick={resetConversation}
                 >
                     <MdAutorenew/>
                 </button>
-                <button className="btn btn-ghost btn-circle">
+                {/* <button className="btn btn-ghost btn-circle">
                 <div className="indicator">
                     <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -56,7 +57,7 @@ const Navbar = () => {
                     </svg>
                     <span className="badge badge-xs badge-primary indicator-item"></span>
                 </div>
-                </button>
+                </button> */}
             </div>
         </div>
     );

@@ -3,6 +3,7 @@ import { useAppSelector } from "../store";
 import ChatContainer from "./ChatContainer";
 import MetadataForm from "./metadata/MetadataForm";
 import { useToast } from "./toast/ToastProvider";
+import NewConversationModal from "./modals/NewConversationModal";
 
 const Container = () => {
 
@@ -20,6 +21,7 @@ const Container = () => {
     return (
         <div className="h-full w-full overflow-y-auto overflow-x-hidden  bg-base-200">
             { conversationId ? <ChatContainer /> : <MetadataForm /> }
+            <NewConversationModal />
         </div>
     )
 }

@@ -5,19 +5,19 @@ import Message, { MessageSchema } from "../models/Message";
 import { text } from "express";
 import { BDI_Questions } from "../data/bdi";
 import { newQuestionContext } from "../utils/context/startQuestionContext";
-
+import { initialGreeting } from "../data/config"
 const schema = z.object({
     metadata: z.array(z.string())
 })
 
-const firstMessage = `Hi there! I'm here to help you assess your mental health using the Beck's Depression Inventory. I'll ask you a few questions to help you gain insights into your current well-being.`;
+
 
 const startProcedure = publicProcedure
 .input(schema)
 .mutation(async( { input } ) => {
     
     const conversation = new Conversation({
-        currentIndex: 0,
+        currentIndex: -1,
         scores: [],
         exchanges: [],
         contextForLLM: [],
@@ -26,27 +26,31 @@ const startProcedure = publicProcedure
         initiateTime: Date.now()
     });
 
-
     const greetingMessage = new Message({
         sender: "Assistant",
-        text: firstMessage,
+        text: initialGreeting,
         timestamp: Date.now(),
     })
 
-    const firstQuestion = new Message({
-        sender: "Assistant",
-        text: `Let's start with the first question: How sad do you feel?`,
-        question: BDI_Questions[0],
-        timestamp: Date.now(),
-    });
-    conversation.messages.push(greetingMessage);
-    conversation.messages.push(firstQuestion);
+    // const firstQuestion = new Message({
+    //     sender: "Assistant",
+    //     text: `Let's start with the first question: How sad do you feel?`,
+    //     question: BDI_Questions[0],
+    //     timestamp: Date.now(),
+    // });
 
-    conversation.currentQuestionContext.push({sender: "Patient", text: firstMessage });
-    const assistantcontext = newQuestionContext(BDI_Questions[0], `Let's start with the first question: How sad do you feel?`);
-    conversation.currentQuestionContext.push(assistantcontext);
+    conversation.messages.push(greetingMessage);
+    // conversation.messages.push(firstQuestion);
+
+    conversation.currentQuestionContext.push({sender: "Patient", text: initialGreeting });
     
-    await Promise.all([ conversation.save(), greetingMessage.save(), firstQuestion.save()] );
+    // const assistantcontext = newQuestionContext(BDI_Questions[0], `Let's start with the first question: How sad do you feel?`);
+    
+    // conversation.currentQuestionContext.push(assistantcontext);
+    
+    // conversation.scores.push({ questionIndex: conversation.currentIndex, score: 0, startTime: Date.now(), endTime: 0 });
+    
+    await Promise.all([ conversation.save(), greetingMessage.save(), /*firstQuestion.save()*/] );
 
     return conversation._id;
 

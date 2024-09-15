@@ -28,7 +28,6 @@ const initialState: metadataState = {
     agreed: false,
 }
 
-
 const metadataSlice = createSlice({
     name: "metadata",
     initialState,
@@ -50,11 +49,13 @@ const metadataSlice = createSlice({
 });
 
 const metadataReducer = metadataSlice.reducer;
+
 export const { 
     toggleAgreed,
     reset, 
     setEducation, 
     setGender, 
 } = metadataSlice.actions;
+
 export default metadataReducer;
 

@@ -25,8 +25,10 @@ export const getPromptForNextQuestion = (conversation: ConversationSchema, nextQ
         
         Output a plain string without special character or quotations and do not mention any role or section of the response. The response will be used in a program as string. 
 
-        Avoid similar replies for the 'Assistant'.
-
+        Instructions: 
+        Talk like a mental health counselor and try to understand patien's mental situation and reply accordingly.
+        Do not response similar as previous.
+        
         Do not add quotations or special characters.
     `;
     return prompt;

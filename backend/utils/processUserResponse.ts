@@ -18,19 +18,9 @@ interface PatientResponseReport{
     isConfident?: boolean;
 }
 
-export const processUserResponse = async (conversation: ConversationSchema, text: string, index: number | undefined): Promise<PatientResponseReport> => {
+export const processUserResponse = async (conversation: ConversationSchema, text: string ): Promise<PatientResponseReport> => {
 
-    if(conversation.currentIndex === BDI_Questions.length){
-        return {};
-    }
-
-    if(index != undefined && ( 0 > index || index > 3)){
-        throw new Error (`Invalid index found. Index: ${index}`)
-    }
     const question = BDI_Questions[conversation.currentIndex];
-    if(index != undefined){
-        return { score: index, isConfident: true };
-    }
 
     // Checking if text matches exactly with any of the possible answers
     const possibleIndex = question.answers.findIndex((answer) => answer === text);

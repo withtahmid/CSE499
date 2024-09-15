@@ -1,21 +1,20 @@
 import { useAppDispatch, useAppSelector } from "../store";
 import ChatBubble from "./ChatBubble";
-
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchPreviousConversation, } from "../store/conversatioSlice";
 import TypingBubble from "./TypingBubble";
 import ChatContainerBottom from "./ChatContainerBottom";
 import ChatLoadingSkeleton from "./ChatLoadingSkeleton";
+import SuggessionBubble from "./SuggessionBubble";
+
 const ChatContainer = () => {
     
     const messages = useAppSelector(state  => state.conversation.messages);
     const conversationId = useAppSelector(state  => state.conversation._id);
     const status = useAppSelector(state  => state.conversation.status);
     const conversationDivRef = useRef<HTMLDivElement>(null);
-
+    const suggessionText = useAppSelector(state => state.chatContainer.suggessionText);
     const [ firstLand,  setFirstLand]  = useState(true);
-
-
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -30,8 +29,16 @@ const ChatContainer = () => {
         }else if(conversationDivRef.current && firstLand){
             conversationDivRef.current.scrollTo({ top: conversationDivRef.current.scrollHeight, behavior: "instant" });
         }
+        if(messages.length > 0){
+            setFirstLand(false);
+        }
     },[messages])
 
+    useEffect(() => {
+        if(conversationDivRef.current && suggessionText.length > 0 && !firstLand){
+            conversationDivRef.current.scrollTo({ top: conversationDivRef.current.scrollHeight, behavior: "smooth" });
+        }
+    }, [suggessionText])
 
     return (
         <div className="w-full h-full flex justify-center">
@@ -43,6 +50,7 @@ const ChatContainer = () => {
                         ))}
                         {(status==="loading") &&  (<ChatLoadingSkeleton />)}
                         {status==="waiting" && ( <TypingBubble />)}
+                        {suggessionText.length > 0 && status !=="waiting" && ( <SuggessionBubble />)}
                     </div>
                 </div>
                 <ChatContainerBottom />

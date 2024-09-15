@@ -11,16 +11,17 @@ import { handleEdgeCase } from "../utils/handleEdgeCase"
 import { getPostMessage } from "../utils/postMessage";
 import { newQuestionContext } from "../utils/context/startQuestionContext";
 import { setScore } from "../utils/setScore";
-import  ConfirmationDetails from "../models/ConfirmationDetails"
+import  ConfirmationDetails from "../models/ConfirmationDetails";
+import { printAnalysis } from "../utils/printAnalysis"
+import { getInitialMessage } from "../utils/getInitialMessage";
 const Inputschema = z.object({
-    text: z.string().min(1).max(200),
-    index: z.number().or(z.undefined()),
+    text: z.string().min(1).max(200)
 })
 
 const sendMessageProcedure = protectedProcedure
 .input(Inputschema)
 .mutation(async( { input , ctx} ) => {
-    const { text , index} = input;
+    const { text } = input;
     const { conversation } = ctx; 
 
     if(conversation.currentIndex >= BDI_Questions.length){
@@ -35,32 +36,46 @@ const sendMessageProcedure = protectedProcedure
         return [ botMessage ] as MessageSchema[];
     }
 
+    
     try {
         const userResponse = new Message({ sender: "Patient", text: text, timestamp: Date.now()});
         conversation.messages.push(userResponse);
         conversation.currentQuestionContext.push({sender: "Patient", text: text });
-        await userResponse.save();
+        userResponse.save();
     } catch (error) {
         console.log(error);
         throw new TRPCError({ message: "Failed to write Patient's mrssage into database", code: "INTERNAL_SERVER_ERROR" });   
     }
     
-    
-    console.log("\n\n--------------------- [ START ] ----------------------------\n");
+    if(conversation.currentIndex === -1){
+        const firstMessage = await getInitialMessage(conversation);
+        
+        // var botResponse = await getNextQuestion(conversation);
+        
+        const assistantcontext = newQuestionContext(BDI_Questions[0], firstMessage);
+        
+        conversation.currentQuestionContext = [ assistantcontext ];
+        
+        var  firstQuestion = new Message({ sender: "Assistant", text: firstMessage, timestamp: Date.now(), question: BDI_Questions[0]});
+        
+        conversation.messages.push(firstQuestion);
+        
+        firstQuestion.save();
 
+        return [ firstQuestion ] as MessageSchema[];
+    }
+
+    
     try {
-        var userresponseReport  = await processUserResponse(conversation, text, index);
+        var userresponseReport  = await processUserResponse(conversation, text);
     } catch (error) {
         console.log(error);
         throw new TRPCError({ message: "Failed to generate 'userResponseReport'", code: "INTERNAL_SERVER_ERROR" });   
     }
 
-
     let response: MessageSchema[] = [];
 
-
     if(userresponseReport.followedQuestion !== undefined){
-        console.log("Asking again");
         const followedQuestion = new Message({ sender: "Assistant", text: userresponseReport.followedQuestion, timestamp: Date.now() });
         conversation.messages.push(followedQuestion);
         conversation.currentQuestionContext.push({sender: "Assistant", text: userresponseReport.followedQuestion });
@@ -72,8 +87,6 @@ const sendMessageProcedure = protectedProcedure
         response.push(followedQuestion);
     }
     else if(userresponseReport.score !== undefined){
-        console.log(`Obtained Score: ${userresponseReport.score}`);
-        // conversation.contextForLLM.push({ sender: "Patient", text: BDI_Questions[conversation.currentIndex].answers[userresponseReport.score]});
         if(!userresponseReport.isConfident){
 
             const confirmationDetails: ConfirmationDetailsSchema = {
@@ -92,7 +105,6 @@ const sendMessageProcedure = protectedProcedure
                 confirmationDetails: confirmationDetails
             });
 
-            
             response.push(confirmationMessage);
             conversation.messages.push(confirmationMessage);
 
@@ -111,6 +123,9 @@ const sendMessageProcedure = protectedProcedure
         }
         conversation.currentIndex = conversation.currentIndex + 1;
         
+
+
+        // Final report
         if(conversation.currentIndex >= BDI_Questions.length){
             try {
                 var finalReport = await getReport(conversation);
@@ -123,13 +138,12 @@ const sendMessageProcedure = protectedProcedure
             }   
         }
         
-       
+        // Ask next Question
 
         try {
             var botResponse = await getNextQuestion(conversation);
             const assistantcontext = newQuestionContext(BDI_Questions[conversation.currentIndex], botResponse);
             conversation.currentQuestionContext = [ assistantcontext ];
-
         }catch (error) {
             throw new TRPCError({ message: "Failed to generate Assistant's next question using context", code: "INTERNAL_SERVER_ERROR" });   
         } 
@@ -145,9 +159,8 @@ const sendMessageProcedure = protectedProcedure
     }else{
         throw new TRPCError({ message: "Both Score and followed by messege is Undefined", code: "INTERNAL_SERVER_ERROR" });   
     }
-
-    console.log(`Current Question: ${conversation.currentIndex}, Total Score: ${conversation.scores.reduce((acc, current) => acc + current.score, 0)}`)
-    console.log("\n---------------------- [ END ] -----------------------------\n");
+    
+    // printAnalysis(conversation);
 
     return response as MessageSchema[];
 

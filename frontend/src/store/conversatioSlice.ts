@@ -56,11 +56,11 @@ export const startNewConversation = createAsyncThunk <string, { metadata: string
     }
 )
 
-export const sendMessage =  createAsyncThunk <MessageSchema[], { text: string, index?:number }, { rejectValue: string}>(
+export const sendMessage =  createAsyncThunk <MessageSchema[], { text: string }, { rejectValue: string}>(
     "conversation/sendMessage",
-    async( {  text, index }, { rejectWithValue } ) =>{
+    async( {  text }, { rejectWithValue } ) =>{
         try {
-            const response = await trpc.sendMessage.mutate(( { text, index } ))
+            const response = await trpc.sendMessage.mutate(( { text } ))
             return response as MessageSchema[];
         } catch (error) {
             if(error instanceof TRPCClientError){
@@ -112,7 +112,7 @@ const conversationSlice = createSlice({
                 if(message.question && message.question.answers && message.question.answers.length){
                     state.currentQuestion = message.question;
                 }else{
-                    state.currentQuestion = null;
+                    // state.currentQuestion = null;
                 }
             });
             state.status = "succeeded";
@@ -121,7 +121,7 @@ const conversationSlice = createSlice({
 
         builder
         .addCase(sendMessage.pending, (state, action) => {
-            state.currentQuestion = null;
+            // state.currentQuestion = null;
             const userText = action.meta.arg.text;
             state.status = "waiting";
             const message: MessageSchema = { _id: uuidV4(), sender: "Patient", text: userText, timestamp: Date.now()};
@@ -138,7 +138,7 @@ const conversationSlice = createSlice({
                 if(message.question && message.question.answers && message.question.answers.length){
                     state.currentQuestion = message.question;
                 }else{
-                    state.currentQuestion = null;
+                    // state.currentQuestion = null;
                 }
             });
             state.status = "succeeded";

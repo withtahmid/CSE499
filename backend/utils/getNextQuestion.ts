@@ -37,5 +37,6 @@ export const getNextQuestion = async (conversation: ConversationSchema): Promise
         console.log(error);
         return `Alright! lets move on to the next question. ${question.question}`
     }
+    conversation.scores.push({ questionIndex: conversation.currentIndex, score: 0, startTime: Date.now(), endTime: 0 });
     return response;
 }

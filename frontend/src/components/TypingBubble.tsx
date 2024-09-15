@@ -1,4 +1,3 @@
-import MessageSchema from "../types/message"
 const TypingBubble = () => {
     return (
         <div className="chat chat-start">
