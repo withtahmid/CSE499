@@ -7,7 +7,7 @@ import { BDI_Questions } from "../data/bdi";
 import { processUserResponse } from "../utils/processUserResponse";
 import { getNextQuestion } from "../utils/getNextQuestion";
 import { getReport } from "../utils/getReport";
-import { handleEdgeCase } from "../utils/handleEdgeCase"
+// import { handleEdgeCase } from "../utils/handleEdgeCase"
 import { getPostMessage } from "../utils/postMessage";
 import { newQuestionContext } from "../utils/context/startQuestionContext";
 import { setScore } from "../utils/setScore";
