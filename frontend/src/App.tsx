@@ -14,11 +14,11 @@ function App() {
 
   return (
     <div className='h-screen w-full bg-base-300 flex flex-col'>
-        <Navbar />
+        {/* <Navbar /> */}
         <ToastProvider>
           <Container />
         </ToastProvider>
-        <Footer />
+        {/* <Footer /> */}
     </div>
   )
 }

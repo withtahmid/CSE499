@@ -4,7 +4,7 @@ const FirstInstruction = () => {
             <div className="hero-content flex-col lg:flex-row">
                 <img
                 src="/src/assets/images/Wall-E.png"
-                className="max-w-sm rounded-lg " />
+                className="max-w-xs rounded-lg " />
                 <div>
                 <h1 className="text-5xl font-bold">hello!</h1>
                 <p className="py-6">

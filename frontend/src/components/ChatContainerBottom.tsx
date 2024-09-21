@@ -12,7 +12,7 @@ const ChatContainerBottom = () => {
     const [ text, setText ] = useState("");
 
     const conversation = useAppSelector(state => state.conversation);
-    const { currentQuestion, status, messages} = conversation;
+    const { currentQuestion, status, messages, isFinished} = conversation;
     const [ showOptions, setShowOptions ] = useState(false);
 
     const suggessionText = useAppSelector(state => state.chatContainer.suggessionText);
@@ -75,10 +75,10 @@ const ChatContainerBottom = () => {
     }, [text, currentQuestion, status]);
 
     return (
-        <div className="h-auto items-center absolute bottom-0 left-0 right-0">
+        <div className="h-auto items-center absolute bottom-5 left-0 right-0">
         <div className="px-5 py-2 flex gap-3 bg-inherit/[0.4] backdrop-blur-sm">
             <label className="bg-base-100 input input-bordered flex items-center gap-5 grow bg-base" >
-                <input disabled={false} type="text" className="grow flex-1" value={text} onChange={onTextChange} onKeyDown={handleEnterPress} placeholder="Send text message"/>
+                <input disabled={isFinished} type="text" className="grow flex-1" value={text} onChange={onTextChange} onKeyDown={handleEnterPress} placeholder="Send text message"/>
                 {/* options */}
                 {/* {(showOptions)&&(answerOptions.map((c, i) => (<kbd key={i} onClick={() => submicAnswerByOption(i)}  className="kbd kbd-md cursor-pointer hover:font-bold hover:border-2">{c}</kbd>)))} */}
                 {text.length > 0 &&(

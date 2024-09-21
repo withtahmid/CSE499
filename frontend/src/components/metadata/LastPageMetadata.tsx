@@ -1,6 +1,5 @@
 import { useAppDispatch, useAppSelector } from "../../store";
-import { toggleAgreed } from "../../store/metadataSlice";
-
+import { toggleAgreed } from "../../store/demographicInfoSlice";
 const instructions = [
     `You will be asked 21 questions from "Beck's Depression Inventory (BDI)"`,
     // `Four possible answers will be provided (A, B, C, D)`,
@@ -17,14 +16,13 @@ const Highlight = ({ text } : { text:string }) => {
 }
 
 const LastPageMetadata = () => {
-
-    const agreed = useAppSelector(state => state.metadata.agreed);
+    const agreed = useAppSelector(state => state.demographicInfo.agreed);
     const dispatch = useAppDispatch();
     return(
         <div className="hero bg-base-300 min-h-full">
             <div className="hero-content">
-                <div className="w-7/12">
-                <h1 className="text-5xl font-bold">Instructuons</h1>
+                <div className="w-full">
+                <h1 className="text-5xl font-bold">Instructions</h1>
                 <ul className="py-6 list-disc list-outside flex flex-col gap-4">
                     <li>
                     You will be presented with 21 questions from the <Highlight text="Beck Depression Inventory (BDI)"/>. Upon completion of the questionnaire, you will receive guidance regarding your BDI score and an overview of your mental health status.
@@ -40,7 +38,7 @@ const LastPageMetadata = () => {
                         type="checkbox" 
                         checked={agreed} 
                         className="checkbox checkbox-primary" 
-                    /> 
+                    />
                     <label className="cursor-pointer" htmlFor="i-understand-checkbot">I understand and agree to the terms and conditions.</label>
                 </div>
                 </div>

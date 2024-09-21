@@ -7,7 +7,7 @@ import { BDI_Questions } from "../data/bdi";
 import { processUserResponse } from "../utils/processUserResponse";
 import { getNextQuestion } from "../utils/getNextQuestion";
 import { getReport } from "../utils/getReport";
-import { handleEdgeCase } from "../utils/handleEdgeCase"
+// import { handleEdgeCase } from "../utils/handleEdgeCase"
 import { getPostMessage } from "../utils/postMessage";
 import { newQuestionContext } from "../utils/context/startQuestionContext";
 import { setScore } from "../utils/setScore";
@@ -25,15 +25,23 @@ const sendMessageProcedure = protectedProcedure
     const { conversation } = ctx; 
 
     if(conversation.currentIndex >= BDI_Questions.length){
-        // // conversation.contextForLLM.push({ sender: "Patient", text: text });
-        // const botResponse = await getPostMessage(conversation);
-        // const botMessage = new Message({ sender: "Assistant", text: botResponse, timestamp: Date.now() });
-        // conversation.messages.push(botMessage);
-        // // conversation.contextForLLM.push({ sender: "Assistant", text: botResponse });
-        // botMessage.save();
-        var finalReport = await getReport(conversation);
-        const botMessage = new Message({ sender: "Assistant", text: finalReport, timestamp: Date.now() });
-        return [ botMessage ] as MessageSchema[];
+        try {
+            var { score, depressionLevel, comment } = await getReport(conversation);
+            var  finalMessage = new Message({ 
+                sender: "Assistant",
+                text: "NULL",
+                timestamp: Date.now(),
+                isReport: true,
+                reportDetails: { score, depressionLevel, comment }
+            });
+            conversation.messages.push(finalMessage);
+            finalMessage.save();
+            conversation.isFinished = true;
+            conversation.endTime = Date.now();
+            return [ finalMessage ];
+        } catch (error) {
+            throw new TRPCError({ message: "Failed to generate post analysis report", code: "INTERNAL_SERVER_ERROR" });   
+        }   
     }
 
     
@@ -128,11 +136,19 @@ const sendMessageProcedure = protectedProcedure
         // Final report
         if(conversation.currentIndex >= BDI_Questions.length){
             try {
-                var finalReport = await getReport(conversation);
-                var  assistantReport = new Message({ sender: "Assistant", text: finalReport, timestamp: Date.now()});
-                conversation.messages.push(assistantReport);
-                assistantReport.save();
-                return [ assistantReport ];
+                var { score, depressionLevel, comment } = await getReport(conversation);
+                var  finalMessage = new Message({ 
+                    sender: "Assistant",
+                    text: "NULL",
+                    timestamp: Date.now(),
+                    isReport: true,
+                    reportDetails: { score, depressionLevel, comment }
+                });
+                conversation.messages.push(finalMessage);
+                finalMessage.save();
+                conversation.isFinished = true;
+                conversation.endTime = Date.now();
+                return [ finalMessage ];
             } catch (error) {
                 throw new TRPCError({ message: "Failed to generate post analysis report", code: "INTERNAL_SERVER_ERROR" });   
             }   
@@ -160,7 +176,7 @@ const sendMessageProcedure = protectedProcedure
         throw new TRPCError({ message: "Both Score and followed by messege is Undefined", code: "INTERNAL_SERVER_ERROR" });   
     }
     
-    // printAnalysis(conversation);
+    printAnalysis(conversation);
 
     return response as MessageSchema[];
 

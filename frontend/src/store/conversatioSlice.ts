@@ -9,6 +9,7 @@ import { TRPCClientError } from "@trpc/client";
 export interface ConversationState{
     _id: string | undefined;
     messages: MessageSchema[];
+    isFinished: boolean;
     status: "idle" | "loading" | "waiting" | "creating" |  "succeeded" | "failed" | "adjusting";
     error: { id: string; message: string; } | undefined;
     currentQuestion: QuestionSchema | null;
@@ -20,18 +21,24 @@ const createError = (message: string) => {
 
 const initialState: ConversationState = {
     _id: localStorage.getItem("conversationId") ?? undefined,
-    messages: [], 
+    messages: [],
+    isFinished: false,
     status:"idle",
     error: undefined,
     currentQuestion: null,
 }
 
-export const fetchPreviousConversation = createAsyncThunk <MessageSchema[], undefined, { rejectValue: string}>(
+interface Previous{
+    messages: MessageSchema[],
+    isFinished: boolean
+}
+
+export const fetchPreviousConversation = createAsyncThunk <Previous, undefined, { rejectValue: string }>(
     "conversation/fetchPrevious",
     async(_, { rejectWithValue } ) =>{
         try {
             const response = await trpc.fetchPrevious.query();
-            return response as MessageSchema[];
+            return response as Previous;
         } catch (error) {
             if(error instanceof TRPCClientError){
                 return rejectWithValue (error.message);
@@ -41,11 +48,11 @@ export const fetchPreviousConversation = createAsyncThunk <MessageSchema[], unde
     }
 )
 
-export const startNewConversation = createAsyncThunk <string, { metadata: string[] }, { rejectValue: string}>(
+export const startNewConversation = createAsyncThunk <string, { demographicInfos: ({ key: string, selected: string | string[], otherValue: string })[] }, { rejectValue: string}>(
     "conversation/start",
-    async({ metadata }, { rejectWithValue } ) =>{
+    async({ demographicInfos }, { rejectWithValue } ) =>{
         try {
-            const conversationId = await trpc.start.mutate({ metadata });
+            const conversationId = await trpc.start.mutate(demographicInfos);
             return conversationId;
         } catch (error) {
             if(error instanceof TRPCClientError){
@@ -102,10 +109,12 @@ const conversationSlice = createSlice({
         })
         .addCase(fetchPreviousConversation.rejected, (state, action) => {
             state.status = "failed";
-            state.error = createError(action.payload as string);
+            // state.error = createError(action.payload as string);
+
+            state.error = createError("Faild to load previous conversation");
         })
         .addCase(fetchPreviousConversation.fulfilled, (state, action) => {
-            const messages = action.payload;
+            const messages = action.payload.messages;
             state.messages = [];
             messages.forEach((message) => {
                 state.messages.push(message);
@@ -114,7 +123,11 @@ const conversationSlice = createSlice({
                 }else{
                     // state.currentQuestion = null;
                 }
+                if(message.isReport){
+                    state.isFinished = true;
+                }
             });
+            state.isFinished = action.payload.isFinished;
             state.status = "succeeded";
         });
 
@@ -129,7 +142,8 @@ const conversationSlice = createSlice({
         })
         .addCase(sendMessage.rejected, (state, action) => {
             state.status = "failed";
-            state.error = createError(action.payload as string);
+            // state.error = createError(action.payload as string);
+            state.error = createError("Faild to send message");
         })
         .addCase(sendMessage.fulfilled, (state, action) => {
             const messages = action.payload;
@@ -139,6 +153,9 @@ const conversationSlice = createSlice({
                     state.currentQuestion = message.question;
                 }else{
                     // state.currentQuestion = null;
+                }
+                if(message.isReport){
+                    state.isFinished = true;
                 }
             });
             state.status = "succeeded";
@@ -150,7 +167,8 @@ const conversationSlice = createSlice({
         })
         .addCase(startNewConversation.rejected, (state, action) => {
             state.status = "failed";
-            state.error = createError(action.payload as string);
+            // state.error = createError(action.payload as string);
+            state.error = createError("Faild to start the conversation");
         })
         .addCase(startNewConversation.fulfilled, (state, action) => {
             localStorage.setItem("conversationId", action.payload);
@@ -166,7 +184,8 @@ const conversationSlice = createSlice({
         })
         .addCase(adjustScore.rejected, (state, action) => {
             state.status = "failed";
-            state.error = createError(action.payload as string);
+            // state.error = createError(action.payload as string);
+            state.error = createError("Faild to adjust option manually");
         })
         .addCase(adjustScore.fulfilled, (state, action) => {
             const message = action.payload;

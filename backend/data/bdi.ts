@@ -189,3 +189,12 @@ export const BDI_Questions = [
         ]
     }
 ];
+
+
+export type Depression_Level = 
+"Extreme depression" | 
+"Severe depression" |
+"Moderate depression" |
+"Borderline clinical depression" | 
+"Mild mood disturbance" | 
+"Normal ups and downs"

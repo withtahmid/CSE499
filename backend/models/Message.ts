@@ -13,14 +13,24 @@ export interface ConfirmationDetailsSchema{
     confirmed: boolean,
 };
 
+export interface ReportSchema {
+    score: number;
+    depressionLevel: string;
+    comment: string;
+} 
+
 export interface MessageSchema extends Document{
     _id: Types.ObjectId;
     sender: "Patient" | "Assistant";
     text: string;
     timestamp: number;
     question?: QuestionSchema;
+    
     isConfirmation?: boolean;
     confirmationDetails?: ConfirmationDetailsSchema;
+    
+    isReport?: boolean; 
+    reportDetails?: ReportSchema;
 }
 
 const messageModel = new Schema<MessageSchema>({
@@ -41,7 +51,17 @@ const messageModel = new Schema<MessageSchema>({
             confirmed: { type: Boolean, required: true , default: false }
         }, { _id: false }),
         required: false
-    }
+    },
+
+    isReport: { type: Boolean, default: false },
+    reportDetails: { 
+        type: new Schema({  
+            score: { type: Number, required: true },
+            depressionLevel: { type: String, required: true },
+            comment: { type: String, required: true },
+        }, { _id: false }),
+        required: false,
+     }
 });
 
 const Message = model("Message", messageModel);

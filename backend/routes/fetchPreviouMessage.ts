@@ -12,7 +12,11 @@ const Inputschema = z.object({
 const fetchPreviousProcedure = protectedProcedure
 .query(async( { ctx } ) => {
     const { conversation } = ctx;
-    return conversation.messages as MessageSchema[];
+    return {
+        messages: conversation.messages as MessageSchema[],
+        isFinished: conversation.isFinished as boolean,
+    }
+    // return conversation.messages as MessageSchema[];
 });
 
 export default fetchPreviousProcedure;

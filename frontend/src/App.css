@@ -6,3 +6,9 @@
     -ms-overflow-style: none;  
     scrollbar-width: none;
 } */
+
+
+
+.light.chat-bubble{
+    background-color: white;
+}

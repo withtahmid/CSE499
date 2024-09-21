@@ -8,7 +8,11 @@ export interface ScoreSchema {
     endTime: number;
 }
 
-// export type metadataSchema = {}
+export interface DemographicInfoSchema {
+    key: string;
+    selected: string;
+    otherValue: string;
+}
 
 export interface ConversationSchema extends Document{
     _id: Types.ObjectId;
@@ -16,15 +20,18 @@ export interface ConversationSchema extends Document{
     messages: MessageSchema[];
     scores: ScoreSchema[];
     metadata: string[];
-    contextForLLM: [ {
-        sender: "Patient" | "Assistant";
-        text: string;
-    } ];
+
+    demographicInfos: DemographicInfoSchema[];
+    feedback: number[];
 
     currentQuestionContext: [{
         sender: "Patient" | "Assistant";
         text: string;
     }];
+    // 
+    isFinished: boolean;
+    startTime: number;
+    endTime: number;
 }
 
 const conversationModel = new Schema<ConversationSchema>({
@@ -38,11 +45,11 @@ const conversationModel = new Schema<ConversationSchema>({
             endTime: { type: Number },
         } 
     ],
-    contextForLLM: [{
-    
-        sender: { type: String, required: true },
-        text: { type: String, required: true },
-    
+
+    demographicInfos: [{
+        key: { type: String, required: true },
+        selected: { type: String, required: true },
+        otherValue: { type: String }
     }],
     
     currentQuestionContext: [{
@@ -51,7 +58,13 @@ const conversationModel = new Schema<ConversationSchema>({
     
     }],
 
+    feedback: [ { type: Number, required: true } ],
+ 
     metadata: [ { type:String }],
+    // 
+    isFinished: { type: Boolean, required: true },
+    startTime: { type: Number, required: true  },
+    endTime: { type: Number,  },
 });
 
 const Conversation = model("Conversation", conversationModel);

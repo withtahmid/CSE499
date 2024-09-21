@@ -1,27 +1,44 @@
 import { useEffect } from "react";
-import { useAppSelector } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import ChatContainer from "./ChatContainer";
 import MetadataForm from "./metadata/MetadataForm";
 import { useToast } from "./toast/ToastProvider";
 import NewConversationModal from "./modals/NewConversationModal";
-
+import { setCurrentpage } from "../store/containerSlice";
+import FeedBackForm from "./feedback/FeedbackForm";
+import FeebackSuccessModal from "./feedback/FeedbackSuccessModal";
 const Container = () => {
+    const dispatch = useAppDispatch();
 
     const { addToast } = useToast();
     const error = useAppSelector(state => state.conversation.error);
-    
+    const currecntPage = useAppSelector(state => state.container.currentPage);
+    const conversationId = useAppSelector(state => state.conversation._id);
+
     useEffect(() => {
+        
+        if(conversationId && currecntPage !== "feedback"){
+            dispatch(setCurrentpage("chat"));
+        }else if(currecntPage !== "feedback"){
+            dispatch(setCurrentpage("form"));
+        }
+
+    }, [conversationId])
+
+    useEffect(() => {
+        
         if(error){
             addToast(error.message, "error");
         }
+
     }, [error])
 
-    const conversationId = useAppSelector(state => state.conversation._id);
     
     return (
         <div className="h-full w-full overflow-y-auto overflow-x-hidden  bg-base-200">
-            { conversationId ? <ChatContainer /> : <MetadataForm /> }
+            {currecntPage==="form" ? (<MetadataForm /> ) : currecntPage ==="chat" ? <ChatContainer /> : currecntPage === "feedback" ? <FeedBackForm /> : <></>}
             <NewConversationModal />
+            <FeebackSuccessModal />
         </div>
     )
 }

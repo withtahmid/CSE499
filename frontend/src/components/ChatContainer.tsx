@@ -6,6 +6,10 @@ import TypingBubble from "./TypingBubble";
 import ChatContainerBottom from "./ChatContainerBottom";
 import ChatLoadingSkeleton from "./ChatLoadingSkeleton";
 import SuggessionBubble from "./SuggessionBubble";
+import ErrorBubble from "./ErrorBubble";
+import { useSelector } from "react-redux";
+import FeedbackBtn from "./small-components/FeedbackBtn";
+import ChatTop from "./ChatTop";
 
 const ChatContainer = () => {
     
@@ -14,6 +18,8 @@ const ChatContainer = () => {
     const status = useAppSelector(state  => state.conversation.status);
     const conversationDivRef = useRef<HTMLDivElement>(null);
     const suggessionText = useAppSelector(state => state.chatContainer.suggessionText);
+    const isFinished = useAppSelector(state => state.conversation.isFinished);
+
     const [ firstLand,  setFirstLand]  = useState(true);
     const dispatch = useAppDispatch();
 
@@ -38,19 +44,23 @@ const ChatContainer = () => {
         if(conversationDivRef.current && suggessionText.length > 0 && !firstLand){
             conversationDivRef.current.scrollTo({ top: conversationDivRef.current.scrollHeight, behavior: "smooth" });
         }
-    }, [suggessionText])
+    }, [suggessionText]);
 
+    
     return (
         <div className="w-full h-full flex justify-center">
-            <div className="flex flex-col h-full w-full md:w-1/2 md:h-auto  bg-base-300 pl-2 relative">
-                <div className="relative h-full">
-                    <div className="absolute bottom-0 right-0 left-0 max-h-full overflow-x-hidden overflow-y-auto pb-16 scrollbar-hide"  ref={conversationDivRef}>
+            <div className="flex flex-col h-full w-full  w-full md:w-8/12 lg:w-4/12 bg-base-300 relative">
+                <ChatTop />
+                <div className="relative h-full ">
+                    <div className="absolute bottom-0 pl-2 right-0 left-0 max-h-full overflow-x-hidden overflow-y-auto pb-24 scrollbar-hide"  ref={conversationDivRef}>
                         {messages.map(message => (
                             <ChatBubble message={message} key={message._id}/>
                         ))}
                         {(status==="loading") &&  (<ChatLoadingSkeleton />)}
                         {status==="waiting" && ( <TypingBubble />)}
                         {suggessionText.length > 0 && status !=="waiting" && ( <SuggessionBubble />)}
+                        {status === "failed" && (<ErrorBubble error={"Something went wrong."}/>)}
+                        {(isFinished === true)&&(<FeedbackBtn />)}
                     </div>
                 </div>
                 <ChatContainerBottom />

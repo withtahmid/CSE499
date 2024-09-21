@@ -6,7 +6,7 @@ export const getInitialMessage = async(conversation: ConversationSchema) => {
 
 
     const history = getContextOfFullConversation(conversation);
-    console.log(history)
+    // console.log(history)
 
     const prompt = `
         Situation: 

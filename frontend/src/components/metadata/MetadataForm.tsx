@@ -1,25 +1,8 @@
 import { useEffect, useState } from "react";
 import RadioSelect from "./RadioSelect";
-import { trpc } from "../../trpc";
-import { 
-    educationLevelSelect,
-    genderSelect,
-    locationSelect,
-    occupationSelect,
-    maritalStatusSelect,
-    socioeconomicStatusSelect,
-    OTHER,
-
- } from "../../data/formData";
-
-
- import {
-    setEducation, 
-    setGender
- }from "../../store/metadataSlice"
-
 import { useAppDispatch, useAppSelector } from "../../store";
-
+import { demographicInfoList } from "../../data/demographicData";
+import { OTHER } from "../../data/demographicData";
 import { startNewConversation } from "../../store/conversatioSlice";
 import FirstInstruction from "./FirstInstruction";
 import SubmitForm from "./LastPageMetadata";
@@ -29,68 +12,60 @@ const MetadataForm = () => {
     const dispatch = useAppDispatch()
 
     const [ btnActive, setbtnActive ] = useState(false);
+    
     const [ index, setIndex ] = useState(0);
-    const metadata = useAppSelector (state => state.metadata);
-    const { education, gender } = metadata;
 
+    const demographicInfo = useAppSelector (state => state.demographicInfo.list);
+    const agreed = useAppSelector(state => state.demographicInfo.agreed);
     const status = useAppSelector(state => state.conversation.status);
 
-    const isOk = () => {
-        const datas = Object.entries(metadata);
-        for(let i = 0; i < index; ++i){
-            const [ _ , data] = datas[i];
-            if(typeof data === "boolean"){
-                if(!data){
-                   return false;
-                }
+    const questions = (() => {
+        const tempQuestions = [ <FirstInstruction /> ]
+        demographicInfoList.forEach((info, index) => {
+            if(info.type === "radio"){
+                tempQuestions.push(<RadioSelect index = {index} />);
             }
-            else if(data.selected === null || (data.otherValue === "" && data.selected === OTHER)){
-                return false;
-            }
-        }
-        return true;
-    }
-   
+        });
+        tempQuestions.push(<SubmitForm />);
+        return tempQuestions
+    })();
 
+   const lastPage = index === (questions.length  - 1);
 
     useEffect(() => {
-        setbtnActive(isOk());
-    }, [metadata, index])
+        setbtnActive((() => {
+            if(lastPage){
+                return agreed;
+            }
+            for(let i = 0; i < index; ++i){
+                const data = demographicInfo[i];
+                if(data.selected === null || (data.otherValue === "" && data.selected === OTHER)){
+                    return false;
+                }
+            }
+            return true;
+        })());
+    }, [demographicInfo, index, agreed]);
 
-    const questions = [ 
-        <FirstInstruction />,
-        <RadioSelect options={educationLevelSelect} value={education} setValue={setEducation}/>,
-        <RadioSelect options={genderSelect} value={gender}  setValue={setGender}/>,
-        // <RadioSelect options={locationSelect} setValue={setLocation}/>,
-        // <RadioSelect options={maritalStatusSelect} setValue={setMaritialStatus}/>,
-        // <RadioSelect options={occupationSelect} setValue={setOccupation}/>,
-        // <RadioSelect options={socioeconomicStatusSelect} setValue={setEconomicStatus}/>,
-        <SubmitForm />
-    ];
 
-    const goNext = () => {
-        setIndex(Math.min(questions.length, index + 1));
-    }
+    const goNext = () => setIndex(Math.min(questions.length, index + 1));
 
-    const goPrevious = () => {
-        setIndex(Math.max(0, index - 1));
-    }
-
+    const goPrevious = () => setIndex(Math.max(0, index - 1));
+    
     const startConversation = () => {
-        dispatch(startNewConversation({metadata: []}));
+        const demographicInfoParsed = demographicInfo.map(( { key, selected, otherValue }) => ({ key, selected: selected ?? "",  otherValue}))
+        dispatch(startNewConversation({ demographicInfos: demographicInfoParsed }));
     };
-     
-    const lastPage = index < (questions.length  - 1);
-    // fixed top-0 bottom-0 left-0 right-0 z-50 
+
     return (
         <div className="flex h-full w-full justify-center items-center  backdrop-blur-sm">
-            <div className="flex flex-col bg-base-300 h-5/6 w-7/12 rounded-lg drop-shadow-2xl">
+            <div className="flex flex-col bg-base-300 h-full w-full lg:w-6/12 lg:h-5/6 md:w-10/12 rounded-lg drop-shadow-2xl py-5">
                 <div className="grow flex items-center p-5">
                     {questions[index]}
                 </div>
-                <div className="join grid grid-cols-2 gap-2 p-2">
+                <div className="join grid grid-cols-2 gap-2 p-2 md:max-w-8/12">
                     <button disabled={ index=== 0 } onClick={goPrevious} className="btn ">Previous</button>
-                    <button disabled={ !btnActive } onClick={lastPage ? goNext : startConversation} className="btn btn-primary">{ lastPage ? "Next" : status === "creating" ? (<span className="loading loading-spinner loading-md"></span>): "Start Conversation"}</button>
+                    <button disabled={ !btnActive } onClick={!lastPage ? goNext : startConversation} className="btn btn-primary">{ !lastPage ? "Next" : status === "creating" ? (<span className="loading loading-spinner loading-md"></span>): "Start Conversation"}</button>
                 </div>
             </div>
         </div>
