@@ -1,7 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch,  useSelector, TypedUseSelectorHook } from "react-redux";
 import conversationReducer from "./conversatioSlice";
-// import metadataReducer from "./metadataSlice";
 import chatContainerReducer from "./chatContainerSlice";
 import containerReducer from "./containerSlice";
 import feedbackFormReducer from "./feedbackFormSlice";
@@ -10,7 +9,6 @@ import demographicInfoReducer from "./demographicInfoSlice";
 const store = configureStore({
     reducer: {
         conversation: conversationReducer,
-        // metadata: metadataReducer,
         chatContainer: chatContainerReducer,
         container: containerReducer,
         feedbackFrom: feedbackFormReducer,

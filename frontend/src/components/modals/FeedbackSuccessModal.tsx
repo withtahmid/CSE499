@@ -1,12 +1,14 @@
 import { useAppDispatch } from "../../store";
 import { setCurrentpage } from "../../store/containerSlice";
 import { clearConversation } from "../../store/conversatioSlice";
+import { resetDemographicForm } from "../../store/demographicInfoSlice";
 
 const FeebackSuccessModal = () => {
 
     const dispatch = useAppDispatch();
 
     const resetEverything = () => {
+        dispatch(resetDemographicForm());
         dispatch(clearConversation());
         dispatch(setCurrentpage("form"));
     }

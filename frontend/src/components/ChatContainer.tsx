@@ -56,8 +56,8 @@ const ChatContainer = () => {
                         {messages.map(message => (
                             <ChatBubble message={message} key={message._id}/>
                         ))}
-                        {(status==="loading") &&  (<ChatLoadingSkeleton />)}
-                        {status==="waiting" && ( <TypingBubble />)}
+                        {(!isFinished && status==="loading") &&  (<ChatLoadingSkeleton />)}
+                        {!isFinished && status==="waiting" && ( <TypingBubble />)}
                         {suggessionText.length > 0 && status !=="waiting" && ( <SuggessionBubble />)}
                         {status === "failed" && (<ErrorBubble error={"Something went wrong."}/>)}
                         {(isFinished === true)&&(<FeedbackBtn />)}

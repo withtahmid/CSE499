@@ -23,8 +23,7 @@ const ConfirmationBubble = ({ message } : { message: MessageSchema }) => {
         <div className="text-center my-6 px-6 opacity-[0.6]">
                 {!confirmationDetails.confirmed ? 
                 (<>
-                <p><strong>"{answerOptions[confirmationDetails.score]}. {confirmationDetails.answer}"</strong> is considered your answer.</p>
-                <p>If that was mistaken please adjust by clicking one of the options.
+                <p className="text-balance"><strong>"{answerOptions[confirmationDetails.score]}. {confirmationDetails.answer}"</strong> is considered your answer. If that was mistaken please adjust by clicking one of the options.
                 {  answerOptions
                     .map((c, i) => ({c, i}))
                     .filter((_, i) => i != confirmationDetails.score)

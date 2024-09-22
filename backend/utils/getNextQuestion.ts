@@ -2,7 +2,7 @@ import { ConversationSchema } from "../models/Conversation";
 import { executePrompt } from "../llm/gemini";
 import { BDI_Questions } from "../data/bdi";
 import { createContextForLLM } from "./createContext";
-import { getPromptForNextQuestion } from "./prompts/getPromptForNextQuestion"
+import { getPromptForNextQuestion, getPromptForNextQuestionWithXQuestionLext } from "./prompts/getPromptForNextQuestion"
 const getPrompt = (context: string, nextQuestion: string) => {
     const prompt = `
         Prompt:
@@ -31,9 +31,13 @@ export const getNextQuestion = async (conversation: ConversationSchema): Promise
     // const context = createContextForLLM(conversation);
     const question = BDI_Questions[conversation.currentIndex]
     // const prompt  = getPrompt(context, question.question);
-    const diffPrompt = getPromptForNextQuestion(conversation, question.question);
+    if(Math.floor(Math.random() * 21) + 1 <= 5){ // probability 5/21
+        console.log("with x question");
+        var diffPrompt = getPromptForNextQuestionWithXQuestionLext(conversation, question.question);
+    }else{
+        diffPrompt = getPromptForNextQuestion(conversation, question.question);
+    }
     try {
-        
         var response = await executePrompt(diffPrompt);
     } catch (error) {
         console.log(error);

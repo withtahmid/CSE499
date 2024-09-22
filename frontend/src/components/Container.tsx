@@ -6,7 +6,8 @@ import { useToast } from "./toast/ToastProvider";
 import NewConversationModal from "./modals/NewConversationModal";
 import { setCurrentpage } from "../store/containerSlice";
 import FeedBackForm from "./feedback/FeedbackForm";
-import FeebackSuccessModal from "./feedback/FeedbackSuccessModal";
+import FeebackSuccessModal from "./modals/FeedbackSuccessModal";
+import SkipFeedbackModal from "./modals/SkipFeedbackModal";
 const Container = () => {
     const dispatch = useAppDispatch();
 
@@ -38,7 +39,6 @@ const Container = () => {
         <div className="h-full w-full overflow-y-auto overflow-x-hidden  bg-base-200">
             {currecntPage==="form" ? (<MetadataForm /> ) : currecntPage ==="chat" ? <ChatContainer /> : currecntPage === "feedback" ? <FeedBackForm /> : <></>}
             <NewConversationModal />
-            <FeebackSuccessModal />
         </div>
     )
 }

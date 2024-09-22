@@ -1,13 +1,7 @@
 import { useAppDispatch, useAppSelector } from "../../store";
 import { toggleAgreed } from "../../store/demographicInfoSlice";
 const instructions = [
-    `You will be asked 21 questions from "Beck's Depression Inventory (BDI)"`,
-    // `Four possible answers will be provided (A, B, C, D)`,
-    // `You can click on buttons provided into the typinig area to answer specificly, or`,
-    // `You can answer by typing related to the given answers in your words`,
-    // `You will be given feedback for which  `
-    `After the question-answer session, you will be instructed about your BDI score and your mental health condition`,
-    `Your personal information will be used for analytical purpose but won't be mapped to your identification`,
+   
 ];
 
 
@@ -22,15 +16,15 @@ const LastPageMetadata = () => {
         <div className="hero bg-base-300 min-h-full">
             <div className="hero-content">
                 <div className="w-full">
-                <h1 className="text-5xl font-bold">Instructions</h1>
-                <ul className="py-6 list-disc list-outside flex flex-col gap-4">
-                    <li>
-                    You will be presented with 21 questions from the <Highlight text="Beck Depression Inventory (BDI)"/>. Upon completion of the questionnaire, you will receive guidance regarding your BDI score and an overview of your mental health status.
-                    </li>
-                    <li>
-                    Please note that while your personal metadata, such education, gender, may be stored for later analytical purposes, no personally identifiable information will be stored. <strong>The data will remain anonymous and will not be linked to any specific individual.</strong>
-                    </li>
-                </ul>
+                <h1 className="text-3xl font-bold">Privacy Policy Acknowledgment</h1>
+                <div className="py-5 ">
+                    <p>We value your privacy and want to assure you that any information you provide will be handled with the utmost care. While your demographic and conversational data may be stored for research purposes, please note the following points:</p>
+                    <ul className="list-disc list-inside flex flex-col gap-4 p-5">
+                        <li className="text-balance"><strong>Anonymity: </strong> All data will be anonymized and will not contain any personally identifiable information. Your responses will not be linked to your identity in any way.</li>
+                        <li className="text-balance"><strong>Data Security: </strong> We employ rigorous security measures to ensure that your information is protected and used solely for research purposes.</li>
+                        <li className="text-balance"><strong>No Identification: </strong>This application does not require any login or identification, and no device information will be stored</li>
+                    </ul>
+                </div>
                 <div className="flex items-center gap-3">
                     <input 
                         onChange={() => dispatch(toggleAgreed())} 
@@ -39,7 +33,7 @@ const LastPageMetadata = () => {
                         checked={agreed} 
                         className="checkbox checkbox-primary" 
                     />
-                    <label className="cursor-pointer" htmlFor="i-understand-checkbot">I understand and agree to the terms and conditions.</label>
+                    <label className="cursor-pointer text-balance" htmlFor="i-understand-checkbot">I acknowledge and accept the terms of the privacy policy regarding my information.</label>
                 </div>
                 </div>
             </div>
@@ -47,3 +41,29 @@ const LastPageMetadata = () => {
     )
 }
 export default LastPageMetadata;
+
+
+/*
+
+Here’s a more formal and clear version of your privacy policy message:
+
+---
+
+**Privacy Policy Acknowledgment**
+
+We value your privacy and want to assure you that any information you provide will be handled with the utmost care. While your demographic and conversational data may be stored for analytical purposes, please note that:
+
+1. **Anonymity**: All data will be anonymized and will not contain any personally identifiable information. Your responses will not be linked to your identity in any way.
+
+2. **Data Security**: We employ rigorous security measures to ensure that your information is protected and used solely for research purposes.
+
+3. **No Identification**: This application does not require any login or identification, and no device information will be stored.
+
+By clicking the checkbox below, you confirm that you understand and agree to these terms.
+
+[ ] I understand and agree to the terms and conditions.
+
+---
+
+Feel free to adjust any part to better fit your app's tone!
+*/

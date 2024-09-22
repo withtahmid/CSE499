@@ -23,6 +23,10 @@ const demographicInfoSlice = createSlice({
         },
         toggleAgreed: (state) => {
             state.agreed = !state.agreed;
+        },
+        resetDemographicForm: (state) => {
+            state.list = initialState.list;
+            state.agreed = false;
         }
     }
 });
@@ -31,7 +35,8 @@ const demographicInfoReducer = demographicInfoSlice.reducer;
 
 export const { 
     setDemographicInfo,
-    toggleAgreed
+    toggleAgreed,
+    resetDemographicForm
 } = demographicInfoSlice.actions;
 
 export default demographicInfoReducer;

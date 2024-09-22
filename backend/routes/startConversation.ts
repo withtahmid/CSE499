@@ -4,7 +4,7 @@ import Conversation, { ConversationSchema, DemographicInfoSchema } from "../mode
 import Message, { MessageSchema } from "../models/Message";
 import { BDI_Questions } from "../data/bdi";
 import { newQuestionContext } from "../utils/context/startQuestionContext";
-import { initialGreeting } from "../data/config"
+import { getInitialGreeting } from "../data/config"
 import { TRPCError } from "@trpc/server";
 const schema = z.array(
     z.object({
@@ -31,6 +31,9 @@ const startProcedure = publicProcedure
             endTime: undefined,
             isFinished: false,
         });
+
+        const initialGreeting = getInitialGreeting();
+
         const greetingMessage = new Message({ sender: "Assistant", text: initialGreeting, timestamp: Date.now() });
         conversation.messages.push(greetingMessage);
         conversation.currentQuestionContext.push({ sender: "Assistant", text: initialGreeting });

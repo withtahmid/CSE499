@@ -8,8 +8,8 @@ const FeedbackBtn = () => {
         dispatch(setCurrentpage("feedback"));
     }
     return (
-        <div className="text-center pt-6 pb-2 flex items-center justify-center gap-3">
-            <p >take 2 more minutes and give us feedback</p>
+        <div className="text-center pt-6 pb-2 flex items-center justify-center gap-3 ">
+            <p className="skeleton">Please take two minutes to give us your feedback.</p>
             <button  
                 onClick={gotoFeedbackPage}
                 className="btn btn-primary btn-sm">Give feedback</button>

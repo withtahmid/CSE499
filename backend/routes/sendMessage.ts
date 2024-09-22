@@ -15,6 +15,7 @@ import  ConfirmationDetails from "../models/ConfirmationDetails";
 import { printAnalysis } from "../utils/printAnalysis"
 import { getInitialMessage } from "../utils/getInitialMessage";
 import { getQuestionLeft } from "../utils/getQuestionLeftMessage"
+import { checkpoints } from "../data/question_checkpoints";
 const Inputschema = z.object({
     text: z.string().min(1).max(200)
 })
@@ -171,26 +172,24 @@ const sendMessageProcedure = protectedProcedure
     }
     
     
-    // if(Math.floor(Math.random() * 21) + 1 <= 4){ // probability 4/21
-    
-    // }
-    const ci = conversation.currentIndex;
-    if( ci === 10 || ci === 15 || ci == 19){
-        try {
-            const qLeftMessage = new Message({
-                sender: "Assistant",
-                text: getQuestionLeft(ci),
-                timestamp : Date.now()
-            });
+   
+    // const ci = conversation.currentIndex;
+    // if(checkpoints[conversation.currentIndex]){
+    //     try {
+    //         const qLeftMessage = new Message({
+    //             sender: "Assistant",
+    //             text: checkpoints[conversation.currentIndex],
+    //             timestamp : Date.now()
+    //         });
             
-            conversation.messages.push(qLeftMessage);
-            qLeftMessage.save()
-            response = [ qLeftMessage, ...response ];
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    // printAnalysis(conversation);
+    //         conversation.messages.push(qLeftMessage);
+    //         qLeftMessage.save()
+    //         response = [ qLeftMessage, ...response ];
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
+    printAnalysis(conversation);
 
     return response as MessageSchema[];
 
