@@ -14,6 +14,7 @@ import { setScore } from "../utils/setScore";
 import  ConfirmationDetails from "../models/ConfirmationDetails";
 import { printAnalysis } from "../utils/printAnalysis"
 import { getInitialMessage } from "../utils/getInitialMessage";
+import { getQuestionLeft } from "../utils/getQuestionLeftMessage"
 const Inputschema = z.object({
     text: z.string().min(1).max(200)
 })
@@ -56,18 +57,11 @@ const sendMessageProcedure = protectedProcedure
     }
     
     if(conversation.currentIndex === -1){
-        const firstMessage = await getInitialMessage(conversation);
-        
-        // var botResponse = await getNextQuestion(conversation);
-        
+        const firstMessage = await getInitialMessage(conversation);        
         const assistantcontext = newQuestionContext(BDI_Questions[0], firstMessage);
-        
         conversation.currentQuestionContext = [ assistantcontext ];
-        
         var  firstQuestion = new Message({ sender: "Assistant", text: firstMessage, timestamp: Date.now(), question: BDI_Questions[0]});
-        
         conversation.messages.push(firstQuestion);
-        
         firstQuestion.save();
 
         return [ firstQuestion ] as MessageSchema[];
@@ -176,7 +170,27 @@ const sendMessageProcedure = protectedProcedure
         throw new TRPCError({ message: "Both Score and followed by messege is Undefined", code: "INTERNAL_SERVER_ERROR" });   
     }
     
-    printAnalysis(conversation);
+    
+    // if(Math.floor(Math.random() * 21) + 1 <= 4){ // probability 4/21
+    
+    // }
+    const ci = conversation.currentIndex;
+    if( ci === 10 || ci === 15 || ci == 19){
+        try {
+            const qLeftMessage = new Message({
+                sender: "Assistant",
+                text: getQuestionLeft(ci),
+                timestamp : Date.now()
+            });
+            
+            conversation.messages.push(qLeftMessage);
+            qLeftMessage.save()
+            response = [ qLeftMessage, ...response ];
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    // printAnalysis(conversation);
 
     return response as MessageSchema[];
 
