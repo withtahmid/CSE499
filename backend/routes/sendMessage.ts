@@ -15,7 +15,6 @@ import  ConfirmationDetails from "../models/ConfirmationDetails";
 import { printAnalysis } from "../utils/printAnalysis"
 import { getInitialMessage } from "../utils/getInitialMessage";
 import { getQuestionLeft } from "../utils/getQuestionLeftMessage"
-import { checkpoints } from "../data/question_checkpoints";
 const Inputschema = z.object({
     text: z.string().min(1).max(200)
 })
@@ -172,23 +171,6 @@ const sendMessageProcedure = protectedProcedure
     }
     
     
-   
-    // const ci = conversation.currentIndex;
-    // if(checkpoints[conversation.currentIndex]){
-    //     try {
-    //         const qLeftMessage = new Message({
-    //             sender: "Assistant",
-    //             text: checkpoints[conversation.currentIndex],
-    //             timestamp : Date.now()
-    //         });
-            
-    //         conversation.messages.push(qLeftMessage);
-    //         qLeftMessage.save()
-    //         response = [ qLeftMessage, ...response ];
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
     printAnalysis(conversation);
 
     return response as MessageSchema[];
