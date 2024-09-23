@@ -26,7 +26,7 @@ const clearDB = async () => {
         console.error('Failed to connect to MongoDB:', error);
         process.exit(1);
     }
-})()
+})();
 
 const app = express();
 

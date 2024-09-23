@@ -1,5 +1,6 @@
 import { useAppSelector } from "../store"
 import { MdAutorenew } from "react-icons/md";
+import RadialProgress from "./small-components/RadialProgress";
 const ChatTop = () => {
 
     const _id = useAppSelector(state => state.conversation._id)
@@ -18,9 +19,12 @@ const ChatTop = () => {
                         <img src="src/assets/images/Wall-E.png" />
                     </div>
                 </div>
+                <a className="btn btn-ghost text-xl">Wall - E</a>
             </div>
             <div className="navbar-center">
-                <a className="btn btn-ghost text-xl">Wall - E</a>
+                <div className="p-2">
+                   <RadialProgress />
+                </div>
             </div>
             <div className="navbar-end">
                 <div className="dropdown dropdown-end">

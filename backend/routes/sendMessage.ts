@@ -35,10 +35,10 @@ const sendMessageProcedure = protectedProcedure
                 isReport: true,
                 reportDetails: { score, depressionLevel, comment }
             });
-            conversation.messages.push(finalMessage);
-            finalMessage.save();
-            conversation.isFinished = true;
-            conversation.endTime = Date.now();
+            // conversation.messages.push(finalMessage);
+            // finalMessage.save();
+            // conversation.isFinished = true;
+            // conversation.endTime = Date.now();
             return [ finalMessage ];
         } catch (error) {
             throw new TRPCError({ message: "Failed to generate post analysis report", code: "INTERNAL_SERVER_ERROR" });   

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { OTHER } from "../../data/formData";
-import { Radio } from "../../store/metadataSlice";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { demographicInfoList } from "../../data/demographicData";
 import { setDemographicInfo } from "../../store/demographicInfoSlice";

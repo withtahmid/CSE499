@@ -1,10 +1,12 @@
 import { executePrompt } from "../llm/gemini"
 import { ConversationSchema } from "../models/Conversation";
 import { getContextByScores } from "./context/getContextForNextQuestion";
+import { getContextOfFullConversation } from "./context/getContextOfFullConversation_";
 import { createContextForLLM } from "./createContext";
 import { getDepressionLevel } from "./helper-functions/parseReport"
 export const getReport = async(conversation: ConversationSchema) => {
     const context = getContextByScores(conversation);
+    // const context = getContextOfFullConversation(conversation);
     const { score, depressionLevel } = getDepressionLevel(conversation);
     
     const prompt = `
@@ -21,13 +23,13 @@ export const getReport = async(conversation: ConversationSchema) => {
         If the patient has depression suggest them to take professional help.
 
         Output length and tone:
-        Response should be a few sentenses long and sound like a professional mental health asistant is telling the report. Tone should be warm and formal.
+        Response should be 5 to 6 sentenses long and sound like a professional mental health asistant is telling the report. Tone should be warm and formal.
 
         Sentense stracture should be You are the Mental-health assistant and talking to the patient.
 
-        Don't mention the MENTAL-HEALTH-STATE in the suggesstion. Use it to make the suggession relevent.
-
         Output Format: 
+        Start with "Your score is ${score} and according to BDI scale you are dealing with ${depressionLevel}. <rest of the suggesstion>" Make the sentenses natural.
+        5 to 6 more sentenses.
         Output should be a plain string. Do not make sections. Do not use quotations or special characters.
         `;
 

@@ -3,6 +3,20 @@ const ChatBubbleReport = ({ message } : { message: MessageSchema}) => {
     if(!message.isReport || !message.reportDetails){
         return <p></p>;
     }
+
+    const skipFirstTwoSentences = (str: string): { report: string, rest: string } => {
+        let firstPeriodIndex = str.indexOf('.');
+        if (firstPeriodIndex === -1) return { report: str, rest: '' };
+    
+        let report = str.slice(0, firstPeriodIndex + 1).trim();
+        let rest = str.slice(firstPeriodIndex + 1).trim();
+    
+        return { report, rest };
+    }
+
+    const { report , rest } = skipFirstTwoSentences(message.reportDetails.comment);
+
+    // const pref
     return (
         <div className="chat chat-start">
             <div className="chat-image avatar">
@@ -13,9 +27,7 @@ const ChatBubbleReport = ({ message } : { message: MessageSchema}) => {
                 </div>
             </div>
             <div className="chat-bubble">
-                <p>Your BDI score is <strong>{message.reportDetails.score}.</strong></p>
-                <p>You have <strong>{message.reportDetails.depressionLevel}</strong> </p>
-                <p>{message.reportDetails.comment}</p>
+                <strong className="text-lg">{report}</strong> {rest}
             </div>
         </div>
     )
