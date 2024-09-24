@@ -3,6 +3,7 @@ import { RiSendPlane2Fill } from "react-icons/ri";
 import { useAppDispatch, useAppSelector } from "../store";
 import { sendMessage } from "../store/conversatioSlice";
 import { setSuggessionText } from "../store/chatContainerSlice";
+import RadialProgress from "./small-components/RadialProgress";
 
 const answerOptions = ["A", "B", "C", "D"];
 
@@ -75,8 +76,9 @@ const ChatContainerBottom = () => {
     }, [text, currentQuestion, status]);
 
     return (
-        <div className="h-auto items-center absolute bottom-5 left-0 right-0">
+    <div className="h-auto items-center absolute bottom-5 left-0 right-0">
         <div className="px-5 py-2 flex gap-3 bg-inherit/[0.4] backdrop-blur-sm">
+            <RadialProgress />
             <label className="bg-base-100 input input-bordered flex items-center gap-5 grow bg-base" >
                 <input disabled={isFinished} type="text" className="grow flex-1" value={text} onChange={onTextChange} onKeyDown={handleEnterPress} placeholder="Send text message"/>
                 {/* options */}

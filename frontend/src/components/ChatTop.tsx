@@ -19,11 +19,12 @@ const ChatTop = () => {
                         <img src="src/assets/images/Wall-E.png" />
                     </div>
                 </div>
+                {/* <RadialProgress /> */}
                 <a className="btn btn-ghost text-xl">Wall - E</a>
             </div>
             <div className="navbar-center">
-                <div className="p-2">
-                   <RadialProgress />
+                <div className="p-2 items">
+                   {/* <RadialProgress /> */}
                 </div>
             </div>
             <div className="navbar-end">

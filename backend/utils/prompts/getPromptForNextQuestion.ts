@@ -50,6 +50,9 @@ export const getPromptForNextQuestionWithXQuestionLext = (conversation: Conversa
         Number-Of-Questions-Left: 
         ${questionLeft}
 
+        Number-Of-Already-Asked-Question:
+        ${conversation.currentIndex}        
+
         Next-Question:
         "${nextQuestion}".
 
@@ -61,8 +64,8 @@ export const getPromptForNextQuestionWithXQuestionLext = (conversation: Conversa
         *Talk like a mental health counselor and try to understand patien's mental situation and reply accordingly.
         *Inform how many questions left.  (examples: We are half way there only 10 more questions left.... We have come to almost end, only 2 more questions.... Here is the last question.... ).
         *Ask the question without changing its meaning.
-        *Make the sentense natural conversational.
-        * Do not make it longer.
+        *Make make the sentenses natural.
+        *Do not make it longer.
         Do not response similar as previous.
         
         Do not add quotations or special characters.

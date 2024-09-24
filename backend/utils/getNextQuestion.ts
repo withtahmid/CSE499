@@ -1,13 +1,26 @@
 import { ConversationSchema } from "../models/Conversation";
 import { executePrompt } from "../llm/gemini";
 import { BDI_Questions } from "../data/bdi";
-import { getPromptForNextQuestion, getPromptForNextQuestionWithXQuestionLext } from "./prompts/getPromptForNextQuestion"
+import { getPromptForNextQuestion, getPromptForNextQuestionWithXQuestionLext } from "./prompts/getPromptForNextQuestion";
+
+const coinToss = (): boolean => {
+    return Math.floor(Math.random() * 100) < 50;
+}
+
+const tellXQuestionLeft = (conversation: ConversationSchema):boolean => {
+    if(Math.abs(conversation.toldQuestionLeftIndex - conversation.currentIndex) < 5){
+        return false;
+    }
+    return coinToss();
+}
+
 export const getNextQuestion = async (conversation: ConversationSchema): Promise < string > => {
     
     const question = BDI_Questions[conversation.currentIndex];
     
-    if((Math.floor(Math.random() * 21) + 1) <= 5){ // probability 5/21
+    if(tellXQuestionLeft(conversation)){
         console.log("with x question");
+        conversation.toldQuestionLeftIndex = conversation.currentIndex;
         var diffPrompt = getPromptForNextQuestionWithXQuestionLext(conversation, question.question);
     }else{
         diffPrompt = getPromptForNextQuestion(conversation, question.question);

@@ -23,7 +23,7 @@ const RadialProgress = () => {
     }, [messages])
     return (
         <div 
-        className="radial-progress bg-primary text-primary-content border-primary border-4 text-xs font-bold" 
+        className="radial-progress bg-base-100  text-sm font-bold" 
         style={{ "--value": `${progress}`, "--size": "3rem", "--thickness": "3px" } as  CustomCSSProperties} role="progressbar">{answered} / 21</div>
     )
 }

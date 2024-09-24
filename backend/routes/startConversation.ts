@@ -30,6 +30,7 @@ const startProcedure = publicProcedure
             startTime: Date.now(),
             endTime: undefined,
             isFinished: false,
+            toldQuestionLeftIndex: -1,
         });
 
         const initialGreeting = getInitialGreeting();
