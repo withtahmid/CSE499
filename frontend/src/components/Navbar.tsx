@@ -5,6 +5,7 @@ import { clearConversation } from "../store/conversatioSlice";
 import { useAppDispatch, useAppSelector } from "../store";
 import { reset } from "../store/metadataSlice";
 import DarkModeBtn from "./small-components/DarkModeBtn";
+import ChatBotImage from '../../src/assets/images/Chatbot.png'
 const Navbar = () => {
     const _id = useAppSelector(state => state.conversation._id)
     const resetConversation = () => {
@@ -19,12 +20,12 @@ const Navbar = () => {
             <div className="navbar-start">
                 <div className="avatar online p-1 cursor-pointer">
                     <div className="ring-primary ring-offset-base-100 w-10 rounded-full ring ring-offset-2">
-                        <img src="src/assets/images/Wall-E.png" />
+                        <img src={ChatBotImage} />
                     </div>
                 </div>
             </div>
             <div className="navbar-center">
-                <a className="btn btn-ghost text-xl">Wall - E</a>
+                <a className="btn btn-ghost text-xl">BondhuBot</a>
             </div>
             <div className="navbar-end">
         

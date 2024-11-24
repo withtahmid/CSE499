@@ -1,6 +1,7 @@
 import MessageSchema from "../types/Message"
 import ChatBubbleReport from "./ChatBubbleReport";
 import ConfirmationBubble from "./ConfirmationDetailsBubble"
+import ChatBotImage from '../../src/assets/images/Chatbot.png'
 const ChatBubble = ({ message } : { message: MessageSchema }) => {
     
     if(message.sender === "Patient"){
@@ -27,7 +28,7 @@ const ChatBubble = ({ message } : { message: MessageSchema }) => {
                 <div className="w-10 p-1 rounded-full bg-white bg-opacity-[0.5]">
                 <img
                     alt="Bot"
-                    src="src/assets/images/Wall-E.png" />
+                    src={ChatBotImage} />
                 </div>
             </div>
             <div className="chat-bubble">
