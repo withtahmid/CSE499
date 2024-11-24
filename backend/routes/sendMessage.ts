@@ -171,7 +171,7 @@ const sendMessageProcedure = protectedProcedure
     }
     
     
-    printAnalysis(conversation);
+    // printAnalysis(conversation);
 
     return response as MessageSchema[];
 

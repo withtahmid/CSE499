@@ -33,6 +33,7 @@ export interface ConversationSchema extends Document{
     startTime: number;
     endTime: number;
     toldQuestionLeftIndex: number;
+    obtainedScore: number;
 }
 
 const conversationModel = new Schema<ConversationSchema>({
@@ -67,6 +68,7 @@ const conversationModel = new Schema<ConversationSchema>({
     startTime: { type: Number, required: true  },
     endTime: { type: Number,  },
     toldQuestionLeftIndex: { type: Number, required: true },
+    obtainedScore: { type: Number, required: true },
 });
 
 const Conversation = model("Conversation", conversationModel);

@@ -8,6 +8,8 @@ import Container from './components/Container'
 import Drawer from './components/Drawer'
 import Footer from './components/Footer'
 import { ToastProvider } from './components/toast/ToastProvider'
+import ChartDriver from './components/ChartDriver'
+import BarChart from './components/ChartDriver'
 
 function App() {
 
@@ -21,6 +23,7 @@ function App() {
         {/* <Footer /> */}
     </div>
   )
+  // return <ChartDriver score = { 50 } />
 }
 
 export default App

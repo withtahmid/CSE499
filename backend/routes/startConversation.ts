@@ -1,9 +1,7 @@
 import { publicProcedure } from "../trpc";
 import { z } from "zod"
-import Conversation, { ConversationSchema, DemographicInfoSchema } from "../models/Conversation";
-import Message, { MessageSchema } from "../models/Message";
-import { BDI_Questions } from "../data/bdi";
-import { newQuestionContext } from "../utils/context/startQuestionContext";
+import Conversation, {DemographicInfoSchema } from "../models/Conversation";
+import Message  from "../models/Message";
 import { getInitialGreeting } from "../data/config"
 import { TRPCError } from "@trpc/server";
 const schema = z.array(
@@ -31,6 +29,7 @@ const startProcedure = publicProcedure
             endTime: undefined,
             isFinished: false,
             toldQuestionLeftIndex: -1,
+            obtainedScore: 0,
         });
 
         const initialGreeting = getInitialGreeting();
