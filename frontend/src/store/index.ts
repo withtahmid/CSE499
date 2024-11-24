@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { useDispatch,  useSelector, TypedUseSelectorHook } from "react-redux";
-import conversationReducer from "./conversatioSlice";
+import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
+import conversationReducer from "./conversatioSlice"
 import chatContainerReducer from "./chatContainerSlice";
 import containerReducer from "./containerSlice";
 import feedbackFormReducer from "./feedbackFormSlice";
@@ -15,7 +15,7 @@ const store = configureStore({
         demographicInfo: demographicInfoReducer,
     }
 });
-export type RootState = ReturnType< typeof store.getState >;
+export type RootState = ReturnType<typeof store.getState>;
 export const useAppDispatch = () => useDispatch<typeof store.dispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 export default store;

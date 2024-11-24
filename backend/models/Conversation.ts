@@ -15,6 +15,7 @@ export interface DemographicInfoSchema {
 }
 
 export interface ConversationSchema extends Document{
+    contextForLLM: any;
     _id: Types.ObjectId;
     currentIndex: number;
     messages: MessageSchema[];

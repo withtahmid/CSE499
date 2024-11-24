@@ -38,7 +38,7 @@ export const fetchPreviousConversation = createAsyncThunk <Previous, undefined, 
     async(_, { rejectWithValue } ) =>{
         try {
             const response = await trpc.fetchPrevious.query();
-            return response as Previous;
+            return response as any;
         } catch (error) {
             if(error instanceof TRPCClientError){
                 return rejectWithValue (error.message);
@@ -48,7 +48,7 @@ export const fetchPreviousConversation = createAsyncThunk <Previous, undefined, 
     }
 )
 
-export const startNewConversation = createAsyncThunk <string, { demographicInfos: ({ key: string, selected: string | string[], otherValue: string })[] }, { rejectValue: string}>(
+export const startNewConversation = createAsyncThunk <any, { demographicInfos: ({ key: string, selected: string | string[], otherValue: string })[] }, { rejectValue: string}>(
     "conversation/start",
     async({ demographicInfos }, { rejectWithValue } ) =>{
         try {
@@ -68,7 +68,7 @@ export const sendMessage =  createAsyncThunk <MessageSchema[], { text: string },
     async( {  text }, { rejectWithValue } ) =>{
         try {
             const response = await trpc.sendMessage.mutate(( { text } ))
-            return response as MessageSchema[];
+            return response as any;
         } catch (error) {
             if(error instanceof TRPCClientError){
                 return rejectWithValue (error.message);
@@ -83,7 +83,7 @@ export const adjustScore = createAsyncThunk<MessageSchema, {_id:string, score: n
     async( {  _id, score }, { rejectWithValue } ) =>{
         try {
             const response = await trpc.adjustScore.mutate({_id, score});
-            return response as MessageSchema;
+            return response as any;
         } catch (error) {
             if(error instanceof TRPCClientError){
                 return rejectWithValue (error.message);

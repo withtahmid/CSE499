@@ -16,5 +16,6 @@ export const trpc = createTRPCProxyClient<AppRouter>({
                 return token ? { Authorization: `Bearer ${token}` } : {};
             }
         })
-    ]
+    ],
+    transformer: undefined
 }) 
