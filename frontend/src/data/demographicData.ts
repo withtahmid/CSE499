@@ -20,7 +20,7 @@ export const gender: DemoInfo = {
     type: "radio",
     key: "Gender",
     question: "What is your gender?",
-    options: [ "Male", "Female", "Non-binary" ]
+    options: [ "Male", "Female"]
 
 }
 
@@ -28,42 +28,42 @@ export const studyLevel: DemoInfo = {
     type: "radio",
     key: "studyLevel",
     question: "What is your current level of study?",
-    options: [ "Undergraduate", "Graduate", "Postgraduate", OTHER ]
+    options: [ "School", "College", "Undergraduate", "Graduate", "Postgraduate" ]
 }
 
 export const fieldOfStudy: DemoInfo = {
     type: "radio",
     key: "fieldOfStudy",
     question: "What is your major or field of study?",
-    options: [ "Arts and Humanities", "Social Sciences", "Natural Sciences", "Engineering and Technology", "Business and Economics", "Health Sciences", OTHER ]
+    options: [ "Arts and Humanities", "Social Sciences", "Natural Sciences", "Engineering and Technology", "Business and Economics", "Medical and Health Sciences" ]
 }
 
 export const universityType: DemoInfo = {
     type: "radio",
     key: "universityType",
     question: "Which type of university do you attend?",
-    options: [ "Public", "Private", OTHER ],
+    options: [ "Public", "Private"],
 }
 
 export const enrollmentStatus: DemoInfo = {
     type: "radio",
     key: "enrollmentStatus",
     question: "What is your current enrollment status?",
-    options: [ "Full-time", "Part-time", "Not currently enrolled", OTHER ],
+    options: [ "Full-time", "Part-time", "Not currently enrolled" ],
 }
 
 export const residentialSituation: DemoInfo = {
     type: "radio",
     key: "residentialSituation",
     question: "What is your current residential situation?",
-    options: [ "On-campus student housing", "Off-campus student housing", "Living with family", OTHER ],
+    options: [ "On-campus student housing", "Off-campus student housing", "Living with family"],
 }
 
 export const studyExpenceSource: DemoInfo = {
     type: "radio",
     key: "studyExpenceSource",
     question: "What is your primary source of financial support for your studies?",
-    options: [ "Personal savings", "Family support", "Scholarships",  "Student loans", "Part-time job", OTHER ],
+    options: [ "Personal savings", "Family support", "Scholarships",  "Student loans", "Part-time job"],
 }
 
 export const hasDisability: DemoInfo = {
@@ -78,7 +78,7 @@ export const householdIncome: DemoInfo = {
     type: "radio", 
     key: "householdIncome",
     question: "What is your household's monthly income?",
-    options: [ "Less than Tk. 50,000", "Tk. 50,000 - Tk. 100,000", "Tk. 100,000 - Tk. 300,000", "More than 300,000"  ],
+    options: [ "Less than Tk. 50,000", "Tk. 50,000 - Tk. 100,000", "Tk. 100,000 - Tk. 300,000", "More than 300,000"],
 }
 
 export const firstToUniversity: DemoInfo = { 
@@ -97,8 +97,7 @@ export const guardianEmployment: DemoInfo = {
         "One parent/guardian employed full-time",
         "Both parents/guardians employed part-time",
         "Both parents/guardians retired",
-        "One or both parents/guardians unemployed",
-        OTHER  
+        "One or both parents/guardians unemployed", 
      ],    
 }
 
@@ -137,16 +136,16 @@ export const demographicInfoList = [
     gender,
     studyLevel,
     fieldOfStudy,
-    universityType,
-    enrollmentStatus,
-    residentialSituation,
+    // universityType,
+    // enrollmentStatus,
+    // residentialSituation,
     studyExpenceSource,
-    hasDisability,
+    // hasDisability,
     householdIncome,
-    firstToUniversity,
+    // firstToUniversity,
     guardianEmployment,
-    peopleInHousehold,
+    // peopleInHousehold,
     hasDependents,
     growingArea,
-    parentsMaritialStatus,
+    // parentsMaritialStatus, 
 ]

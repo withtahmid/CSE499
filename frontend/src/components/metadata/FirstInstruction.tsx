@@ -10,7 +10,7 @@ const FirstInstruction = () => {
                 <div>
                     <h1 className="text-5xl font-bold">Welcome!</h1>
                     <p className="py-6">
-                        Thank you for choosing to engage with us. Before we begin, we kindly ask you to provide some demographic information. This data will help us better understand your circumstances and contribute valuable insights for our research.
+                        You’ve taken a great step towards your mental well-being! I'm BondhuBot, your friendly mental health assistant. To help us understand your circumstances better, we will ask you for some demographic information before we began chatting.
                     </p>
                     <p>When you are ready, please click <strong>Next</strong> to proceed.</p>
                 </div>

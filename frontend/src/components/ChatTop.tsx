@@ -49,8 +49,8 @@ const ChatTop = () => {
                         tabIndex={0}
                         className="left-[-10] menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
                         <li><label className="flex justify-between" onClick={resetConversation}>New Conversation <MdAutorenew className="text-lg" /></label></li>
-                        <li><label htmlFor="dbd6f2a8-7523-11ef-a8dd-efafc29dbcb6" className="flex justify-between">Dark Mode <input id="dbd6f2a8-7523-11ef-a8dd-efafc29dbcb6" type="checkbox" className="toggle toggle-xs" defaultChecked /></label></li>
-                        <li><label className="flex justify-between">About</label></li>
+                        {/* <li><label htmlFor="dbd6f2a8-7523-11ef-a8dd-efafc29dbcb6" className="flex justify-between">Dark Mode <input id="dbd6f2a8-7523-11ef-a8dd-efafc29dbcb6" type="checkbox" className="toggle toggle-xs" defaultChecked /></label></li>
+                        <li><label className="flex justify-between">About</label></li> */}
                     </ul>
                 </div>
 
