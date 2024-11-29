@@ -10,7 +10,7 @@ import ErrorBubble from "./ErrorBubble";
 import { useSelector } from "react-redux";
 import FeedbackBtn from "./small-components/FeedbackBtn";
 import ChatTop from "./ChatTop";
-
+import ChartDriver from "./ChartDriver";
 const ChatContainer = () => {
     
     const messages = useAppSelector(state  => state.conversation.messages);
@@ -59,8 +59,8 @@ const ChatContainer = () => {
                         {(!isFinished && status==="loading") &&  (<ChatLoadingSkeleton />)}
                         {!isFinished && status==="waiting" && ( <TypingBubble />)}
                         {suggessionText.length > 0 && status !=="waiting" && ( <SuggessionBubble />)}
-                        {status === "failed" && (<ErrorBubble error={"Something went wrong."}/>)}
                         {(isFinished === true)&&(<FeedbackBtn />)}
+                        {status === "failed" && (<ErrorBubble error={"Something went wrong."}/>)}
                     </div>
                 </div>
                 <ChatContainerBottom />

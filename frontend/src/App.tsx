@@ -16,14 +16,12 @@ function App() {
 
   return (
     <div className='h-screen w-full bg-base-300 flex flex-col'>
-        {/* <Navbar /> */}
         <ToastProvider>
           <Container />
         </ToastProvider>
-        {/* <Footer /> */}
     </div>
   )
-  // return <ChartDriver score = { 50 } />
+ 
 }
 
 export default App

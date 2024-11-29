@@ -15,13 +15,11 @@ const clearDB = async () => {
     console.log("\n-----------------------------");
     console.log("Database Cleared");
     console.log("-----------------------------\n");
-}
-
+} 
 (async()=>{
     try {
         await mongoose.connect(process.env.MONGODB_URI as string);
         console.log('Connected to MongoDB');
-        // await clearDB();
     } catch (error) {
         console.error('Failed to connect to MongoDB:', error);
         process.exit(1);
