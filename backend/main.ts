@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter } from "./routes";
 import { createContext } from "./trpc";
-import Message  from "./models/Message"
+import Message from "./models/Message"
 import Conversation from "./models/Conversation";
 
 const clearDB = async () => {
@@ -15,8 +15,8 @@ const clearDB = async () => {
     console.log("\n-----------------------------");
     console.log("Database Cleared");
     console.log("-----------------------------\n");
-} 
-(async()=>{
+}
+(async () => {
     try {
         await mongoose.connect(process.env.MONGODB_URI as string);
         console.log('Connected to MongoDB');
