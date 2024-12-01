@@ -77,7 +77,6 @@ const MetadataForm = () => {
                 <div className="grow flex items-center justify-center p-5">
                     <div className="items-start">
                         {questions[index]}
-
                     </div>
                 </div>
                 {!firstPage && !lastPage && (
